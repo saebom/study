@@ -25,15 +25,11 @@ x_train, x_test, y_train, y_test = train_test_split(
 
 #2. 모델 구성
 model = Sequential()
-model.add(Dense(10, input_dim=10))
-model.add(Dense(30))
-model.add(Dense(40))
-model.add(Dense(50))
-model.add(Dense(70))
-model.add(Dense(100))
-model.add(Dense(70))
-model.add(Dense(50))
-model.add(Dense(30))
+model.add(Dense(100, input_dim=10))
+model.add(Dense(248))
+model.add(Dense(124))
+model.add(Dense(62))
+model.add(Dense(7))
 model.add(Dense(1))
 
 
