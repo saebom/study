@@ -1,4 +1,3 @@
-# 2022.07.01 :: 과적합
 from tabnanny import verbose
 import numpy as ny
 from tensorflow.python.keras.models import Sequential
@@ -14,7 +13,7 @@ x = datasets.data
 y = datasets.target
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.8, shuffle=True, random_state=0
+    x, y, test_size=0.2, shuffle=True, random_state=0
 )
 
 #2. 모델 구성
