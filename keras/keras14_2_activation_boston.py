@@ -24,7 +24,7 @@ x = datasets.data
 y = datasets.target
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.8, shuffle=True, random_state=66
+    x, y, test_size=0.2, shuffle=True, random_state=66
 )
 
 #2. 모델 구성
