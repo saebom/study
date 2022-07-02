@@ -29,18 +29,18 @@ x_train, x_test, y_train, y_test = train_test_split(
 
 #2. 모델 구성
 model = Sequential()
-model.add(Dense(100, activation='linear', input_dim=30))    # 기본 default 값은 activation = 'linear'
+model.add(Dense(100, activation='linear', input_dim=30))    # 기본 activation의 default 값은 'linear'
 model.add(Dense(100, activation='relu'))
 model.add(Dense(100, activation='relu'))        # relu 는 히든레이어에서만 사용가능함
 model.add(Dense(100, activation='relu'))
-model.add(Dense(1, activation = 'sigmoid'))     # output에서 activatoin = 'sigmoid' ==> 마지막 결과치는 0~1사이로 나옴
-                                                # **** 분류모델의 경우 반올림하여 0과 1로 결과값을 받음
+model.add(Dense(1, activation = 'sigmoid'))     # output에서 activatoin = 'sigmoid' ==> 마지막 결과값이 0~1사이로 나옴
+                                                # **** 이진 분류모델의 경우 반올림하여 0과 1로 결과값을 받음
 
 
 #3. 훈련
 model.compile(loss='binary_crossentropy', optimizer='adam',
             #   metrics=['accuracy'],
-              metrics=['accuracy', 'mse'])  # 이진분류 함수의 경우 loss = 'binary_crossentropy' 이고 
+              metrics=['accuracy', 'mse'])  # 이진 분류함수의 경우 loss = 'binary_crossentropy' 이고 
                                             # 평가지표 metrics['accuracy']를 사용, 회귀모델의 경우 mse를 사용함
 
 earlyStopping = EarlyStopping(monitor = 'val_loss', patience=100, mode='min', verbose=1, 
@@ -60,8 +60,8 @@ print('loss : ', loss)
 #=== 과제 1. accuracy_score 완성하기 =========================================
 y_predict = model.predict(x_test)
 
-y_predict = y_predict.flatten() # 차원 펴주기
-pred_class = np.where(y_predict > 0.5, 1 , 0) #0.5보다크면 2, 작으면 1
+y_predict = y_predict.flatten()                 # 차원 펴주기
+pred_class = np.where(y_predict > 0.5, 1 , 0)   # 0.5보다크면 1, 작으면 0
 print(pred_class)
 
 from sklearn.metrics import classification_report
