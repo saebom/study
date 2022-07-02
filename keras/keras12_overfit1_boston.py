@@ -22,12 +22,8 @@ print(datasets.feature_names)    # feature_name은 사이킷런에서 예제용�
 print(datasets.DESCR)
 '''
 
-#[실습] 아래를 완성할 것
-#1) train 0.7
-#2) R2를 0.8 이상
-
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.8, shuffle=True, random_state=66
+    x, y, test_size=0.2, shuffle=True, random_state=66
 )
 
 #2. 모델 구성
