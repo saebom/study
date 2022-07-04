@@ -50,7 +50,7 @@ hist = model.fit(x_train, y_train, epochs=1000, batch_size=100,
                  validation_split=0.2,
                  callbacks=[earlyStopping],
                  verbose=1)
-end_time = time.time()
+end_time = time.time() - start_time
 
 
 #4. 평가, 예측
@@ -65,7 +65,7 @@ y_predict = np.where(y_predict > 0.5, 1 , 0)   # 0.5보다 크면 1, 작으면 0
 print(y_predict)
 
 from sklearn.metrics import classification_report
-print(classification_report(y_test, y_predict)
+print(classification_report(y_test, y_predict))
 # ====================================================== 과제 1 끝 ===========
 
 acc = accuracy_score(y_test, y_predict)
@@ -106,7 +106,7 @@ plt.show()
 #==================================================================================#
 
 ##=============================== 내 용 정 리 =====================================##
-# 1) model 구성에서 마지막 output layer에 activation=sigmoid
+# 1) 이진분류 model 구성에서 마지막 output layer에 activation=sigmoid
 #   (이진분류 모델의 경우 반올림하여 0과 1의 결과 값을 받음)
 # 2) model.compile 에서 loss='binary_crossentropy', metrics=['accuracy']
 #   (이진분류 모델은 loss가 binary_crossentropy이고 accuracy를 평가지표로 사용함)

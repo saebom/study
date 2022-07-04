@@ -257,12 +257,12 @@ model.compile(loss='mae', optimizer='adam', metrics=['mse'])
 earlyStopping = EarlyStopping(monitor='val_loss', patience=200, mode='min',
                               restore_best_weights=True, 
                               verbose=1)
-strat_time = time.time()
+start_time = time.time()
 hist = model.fit(x_train, y_train, epochs=4000, batch_size=100,
                  validation_split=0.2,
                  callbacks=[earlyStopping],
                  verbose=1)
-end_time = time.time()
+end_time = time.time() - start_time
 
 
 #4. 평가예측
