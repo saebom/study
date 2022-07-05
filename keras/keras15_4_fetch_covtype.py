@@ -89,10 +89,10 @@ print('loss : ', loss)
 print('accuracy : ', acc)
 
 y_predict = model.predict(x_test)
-y_predict = y_predict.argmax(axis=1)      # tensorflow에서 사용
-y_test = y_test.argmax(axis=1)            # tensorflow에서 사용
-# y_predict = tf.argmax(y_predict, axis=1)    # pandas에서 사용
-# y_test = tf.argmax(y_test, axis=1)          # pandas에서 사용
+y_predict = y_predict.argmax(axis=1)      # tensorflow에서 사용 : to_categorical
+y_test = y_test.argmax(axis=1)            # tensorflow에서 사용 : to_categorical
+# y_predict = tf.argmax(y_predict, axis=1)    # pandas에서 사용 : get_dummies
+# y_test = tf.argmax(y_test, axis=1)          # pandas에서 사용 : get_dummies
 
 
 
