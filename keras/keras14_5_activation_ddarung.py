@@ -1,6 +1,3 @@
-from calendar import c
-from subprocess import call
-from lightgbm import early_stopping
 import numpy as np
 import pandas as pd
 from tensorflow.python.keras.models import Sequential

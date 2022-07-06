@@ -1,31 +1,33 @@
 import numpy as np
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
+from sklearn import datasets
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
-import time
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MaxAbsScaler, RobustScaler
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
 from tensorflow.python.keras.callbacks import EarlyStopping
+from sklearn.metrics import r2_score, accuracy_score
+import time
 import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
 
-
+#1. 데이터
 datasets = fetch_california_housing()
 x = datasets.data
 y = datasets.target
 
-'''
-print(x)
-print(y)
-print(x.shape, y.shape)  # (20640, 8) (206040,)
-
-print(datasets.feature_names)
-print(datasets.DESCR)
-'''
-
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size=0.9, shuffle=True, random_state=0
+    x, y, train_size=0.7, random_state=66
 )
+
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
 #2. 모델 구성
 model = Sequential()
@@ -68,7 +70,6 @@ print(hist.history['loss'])
 print("=================================================================")
 # print(hist.history['val_loss'])
 
-
 import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
 font_path = 'C:\Windows\Fonts\malgun.ttf'
@@ -87,28 +88,32 @@ plt.legend()
 plt.show()
 
 
-
-#================================ 적용 전 데이터 ===================================#
-# loss : 0.662193238735199 
-# r2 스코어: 0.4921656465420844
-#==================================================================================#
-
-#================================ 적용 후 데이터 ===================================#
+#============================ Scaler 적용 전 데이터 ===============================#
 # loss :  0.4930032193660736
 # mse :  0.4930032193660736 
 # r2 스코어:  0.6412728093980673
 #==================================================================================#
 
-##=============================== 내 용 정 리 ======================================##
-# 1) 회귀모델이므로 loss='mae', metrics=['mse'] 사용
-#   (회귀모델에서는 'accuracy'= 0이 나옴)
-# 2) 회귀모델이므로 accuracy_score 가 아니라 r2 값 사용
-# 주의!!! output 레이어에 'sigmoid'가 아니라 'linear' 사용해야 함(분류모델 아니까!!!)
-##=================================================================================##
-         
-##================================ 느 낀 점 ========================================##
-# 처음에 output 레이어에 'sigmoid'가 아니라 'linear' 적용은 잊지않고 하였으나, 
-# loss = 'binary_crossentropy'로 적용했더니 훈련 증 loss 값에 NaN이 나와서 당황하였음
-# 회귀모델은 loss = 'mae', metrics=['mse']로 사용해야한다는 것을 알게됨
-##=================================================================================##
-         
+#=========================== MinMaxScaler 적용 후 데이터 ============================#
+# loss :  0.2561401128768921
+# mse :  0.2561401128768921
+# r2 스코어:   0.8133321552071293
+#==================================================================================#
+
+#=========================== StandardScaler 적용 후 데이터 ==========================#
+# loss :  0.27067136764526367
+# mse :  0.27067136764526367
+# r2 스코어:  0.8027422202156695
+#==================================================================================#
+
+#=========================== MaxAbsScaler 적용 후 데이터 ==========================#
+# loss :  0.33722156286239624
+# mse :  0.33722156286239624
+# r2 스코어:  0.7542421946329673
+#==================================================================================#
+
+#=========================== RobustScaler 적용 후 데이터 ==========================#
+# loss :  0.2945418953895569
+# mse :  0.2945418953895569
+# r2 스코어:  0.7853458715414465
+#==================================================================================#

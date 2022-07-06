@@ -1,30 +1,16 @@
-# [실습]
-# 시작 !!!
-from bitarray import test
-from matplotlib.pyplot import axis
 import numpy as np
 import pandas as pd
 from sklearn import datasets
-import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler, RobustScaler
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from tensorflow.python.keras.callbacks import EarlyStopping
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, accuracy_score
+from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
 import time
 import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
 
-
-import tensorflow as tf
-tf.random.set_seed(66)
-
-# dataset.describe()
-# dataset.info()
-# dataset.isnull().sum()
-
-# pandas의 y라벨의 종류가 무엇인지 확인하는 함수 쓸 것
-# numpy에서는 np.unique(y, return_counts=True) => pandas에서 동일한 함수 확인
 
 # 1. 데이터
 
@@ -101,7 +87,14 @@ print(y.shape)  # (891,)
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.9, shuffle=True, random_state=23
 )
-print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)  # (801, 7) (90, 7) (801,) (90,)
+
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
 # 2. 모델 구성
 model = Sequential()
@@ -176,14 +169,38 @@ y_summit = np.where(y_summit > 0.55, 1 , 0)
 # print(y_summit)
 # print(y_summit.shape)
 
-submission = pd.read_csv('./_data/kaggle_titanic/submission.csv')
-submission['Survived'] = y_summit
-print(submission)
-submission.to_csv('./_data/kaggle_titanic/submission1.csv', index=False)
+# submission = pd.read_csv('./_data/kaggle_titanic/submission.csv')
+# submission['Survived'] = y_summit
+# print(submission)
+# submission.to_csv('./_data/kaggle_titanic/submission1.csv', index=False)
 
-#==================================================================================#
-# random_state=23
+
+#============================ Scaler 적용 전 데이터 ===============================#
 # loss :  0.3597975969314575
 # acc 스코어 :  0.8777777777777778
 # mse : 0.10813453793525696  
+#==================================================================================#
+
+#=========================== MinMaxScaler 적용 후 데이터 ============================#
+# loss :  0.41818588972091675
+# acc 스코어 :  0.8222222222222222
+# mse : 0.13064371049404144  
+#==================================================================================#
+
+#=========================== StandardScaler 적용 후 데이터 ==========================#
+# loss :  0.394330769777298
+# acc 스코어 : 0.8444444444444444
+# mse : 0.12095355987548828
+#==================================================================================#
+
+#=========================== MaxAbsScaler 적용 후 데이터 ==========================#
+# loss :  0.4244685769081116
+# acc 스코어 : 0.8444444444444444
+# mse : 0.13133832812309265
+#==================================================================================#
+
+#=========================== RobustScaler 적용 후 데이터 ==========================#
+# loss :  0.38997960090637207
+# acc 스코어 : 0.8555555555555555
+# mse : 0.12007081508636475
 #==================================================================================#

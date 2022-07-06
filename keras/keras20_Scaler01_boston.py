@@ -1,16 +1,11 @@
-# 과제
-# activation : sigmoid, relu, linear 넣어라
-# metrics 추가
-# EarlyStopping 넣구
-# 성능비교
-# 느낀점 2줄 이상!!!
-
-
-import numpy as ny
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+import numpy as np
+from sklearn import datasets
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MaxAbsScaler, RobustScaler
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
 from tensorflow.python.keras.callbacks import EarlyStopping
 from sklearn.metrics import r2_score, accuracy_score
 import time
@@ -20,11 +15,38 @@ from matplotlib import font_manager, rc
 #1. 데이터
 datasets = load_boston()
 x = datasets.data
-y = datasets.target
+y = datasets['target']
+
+# print(np.min(x))    # 0.0
+# print(np.max(x))    # 711.0
+# x = (x - np.min(x)) / (np.max(x)-np.min(x))
+# print(x[:10])
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.2, shuffle=True, random_state=66
+    x, y, train_size=0.7, random_state=66
 )
+
+scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+# scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
+
+# print(np.min(x_train))    # 0.0
+# print(np.max(x_train))    # 1.0000000000000002
+# print(np.min(x_test))    # 0.0
+# print(np.max(x_test))
+
+# a = 0.1
+# b = 0.2
+# print(a+b)  # 0.30000000000000004
+
+# 보스턴에 대해서 3가지 비교
+# 1. 스케일러 하기 전
+# 2. 민맥스
+# 3. 스탠다드 => 3가지 성능 비교
 
 #2. 모델 구성
 model = Sequential()
@@ -44,8 +66,7 @@ model.add(Dense(1, activation='linear'))
 
 #3. 훈련
 model.compile(loss='mae', optimizer='adam',
-              metrics=['mse'])  # 회귀모델의 경우 loss='mae', metrics='mse' 사용 (회귀모델이므로 accuracy=0)
-
+              metrics=['mse']) 
 earlyStopping = EarlyStopping(monitor = 'val_loss', patience=100, mode='min', verbose=1, 
                               restore_best_weights=True)  
 
@@ -60,6 +81,7 @@ end_time =time.time() - start_time
 #4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss)
+
 y_predict = model.predict(x_test)  
 r2 = r2_score(y_test, y_predict)
 print('r2 스코어: ', r2)  
@@ -88,32 +110,35 @@ plt.grid()
 plt.title('로스값과 검증로스값')    
 plt.ylabel('loss')
 plt.xlabel('epochs')
-# plt.legend(loc='upper right')   # 우측상단에 라벨표시
-plt.legend()   # 자동으로 빈 공간에 라벨표시
+plt.legend()  
 plt.show()
 
-
-#================================ 적용 전 데이터 ===================================#
-# loss :  28.372167587280273
-# r2 스코어:  0.6440093136844579
-#==================================================================================#
-
-#================================ 적용 후 데이터 ===================================#
+#============================ Scaler 적용 전 데이터 ===============================#
 # loss :  2.4444220066070557
 # mse :  11.027112007141113 
 # r2 스코어:  0.8680698301243783
 #==================================================================================#
 
-##=============================== 내 용 정 리 ======================================##
-# 1) 회귀모델이므로 loss='mae', metrics=['mse'] 사용
-#   (회귀모델에서는 'accuracy'= 0이 나옴)
-# 2) 회귀모델이므로 accuracy_score 가 아니라 r2 값 사용
-# 주의!!! output 레이어에 'sigmoid'가 아니라 'linear' 사용해야 함(분류모델 아니까!!!)
-##=================================================================================##
-         
-##================================ 느 낀 점 ========================================##
-# 처음에 output 레이어에 'sigmoid'가 아니라 'linear' 적용은 잊지않고 하였으나, 
-# loss = 'binary_crossentropy'로 적용했더니 훈련 증 loss 값에 NaN이 나와서 당황하였음
-# 회귀모델은 loss = 'mae', metrics=['mse']로 사용해야한다는 것을 알게됨
-##=================================================================================##
-         
+#=========================== MinMaxScaler 적용 후 데이터 ============================#
+# loss :  2.467968702316284
+# mse :  10.638111114501953
+# r2 스코어:   0.8712359745153038
+#==================================================================================#
+
+#=========================== StandardScaler 적용 후 데이터 ==========================#
+# loss : 2.208564519882202
+# mse :  11.264325141906738
+# r2 스코어:  0.8636562521620402
+#==================================================================================#
+
+#=========================== MaxAbsScaler 적용 후 데이터 ==========================#
+# loss : 2.2751407623291016
+# mse :  10.479668617248535
+# r2 스코어:  0.8731537585400484
+#==================================================================================#
+
+#=========================== RobustScaler 적용 후 데이터 ==========================#
+# loss : 2.303745985031128
+# mse :  10.724520683288574
+# r2 스코어:   0.8701900527179431
+#==================================================================================#
