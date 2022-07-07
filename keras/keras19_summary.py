@@ -18,6 +18,7 @@ model.add(Dense(1))
 model.summary() # 연산량을 보여 줌 Layer-OutputShape-Param 
 
 '''
+Model: "sequential"
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #
 =================================================================

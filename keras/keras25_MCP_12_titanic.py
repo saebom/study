@@ -3,9 +3,9 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler, RobustScaler
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
-from tensorflow.python.keras.callbacks import EarlyStopping
+from tensorflow.python.keras.models import Sequential, Model, load_model
+from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
 import time
 import matplotlib.pyplot as plt
@@ -16,23 +16,7 @@ from matplotlib import font_manager, rc
 
 path = './_data/kaggle_titanic/'
 train_set = pd.read_csv(path + 'train.csv', index_col=0)
-
-# print(train_set)
-# print(train_set.columns)                         
-# print('train_set의 info :: ', train_set.info())
-# print(train_set.describe())
-# print(train_set.isnull().sum())     # Age 177, Cabin 687, Embarked 2
-# print("========================================================")
-
 test_set = pd.read_csv(path + 'test.csv', index_col=0)
-
-# print(test_set) 
-# print(test_set.columns) 
-# print('test_set의 info :: ', test_set.info())
-# # print(test_set.describe())
-# print(test_set.feature_name)
-# print(test_set.isnull().sum())  # Age 86, Cabin 327  
-# print("========================================================")
 
 submission = pd.read_csv(path + 'gender_submission.csv')
 print('train.shape, test.shape, submit.shape', 
@@ -88,13 +72,6 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.9, shuffle=True, random_state=23
 )
 
-# scaler = MinMaxScaler()
-# scaler = StandardScaler()
-# scaler = MaxAbsScaler()
-scaler = RobustScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
-x_test = scaler.transform(x_test)
 
 # 2. 모델 구성
 model = Sequential()
@@ -104,18 +81,31 @@ model.add(Dense(100, activation='relu'))
 model.add(Dense(100, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
-#3. 훈련
+
+# 3. 훈련
 model.compile(loss='binary_crossentropy', optimizer='adam',
             #   metrics=['accuracy'],
               metrics=['accuracy', 'mse'])  
 
+import datetime
+date = datetime.datetime.now()     
+date = date.strftime("%m%d_%H%M")   
+print(date)
+
+filepath = './_ModelCheckPoint/k24/'
+filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
+
 earlyStopping = EarlyStopping(monitor = 'val_loss', patience=100, mode='min',
                               restore_best_weights=True,
                               verbose=1)
+mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1, 
+                      save_best_only=True, 
+                      filepath="".join([filepath, '12_', date, '_', filename])
+                      )
 start_time = time.time() 
 hist = model.fit(x_train, y_train, epochs=500, batch_size=37,
                  validation_split=0.2,
-                 callbacks=[earlyStopping],
+                 callbacks=[earlyStopping, mcp],
                  verbose=1)
 end_time = time.time() - start_time
 
@@ -136,71 +126,9 @@ acc = accuracy_score(y_test, y_predict)
 print("=====================================================================")   
 print('acc 스코어 : ', acc)  
 
-# print("===================================================================")   
-# print(hist)     
-# print("===================================================================")
-# print(hist.history)   
-print("=====================================================================")
-print(hist.history['loss'])
-print("=====================================================================")
-# print(hist.history['val_loss'])
 
-
-#그래프로 비교
-font_path = 'C:\Windows\Fonts\malgun.ttf'
-font = font_manager.FontProperties(fname=font_path).get_name()
-rc('font', family=font)
-plt.figure(figsize=(9,6))
-plt.plot(hist.history['loss'], marker='.', c='red', label='loss')
-plt.plot(hist.history['val_loss'], marker='.', c='blue', label='val_loss')
-plt.grid()
-# plt.title('loss & val_loss')    
-plt.title('로스값과 검증로스값')    
-plt.ylabel('loss')
-plt.xlabel('epochs')
-plt.legend()   # 자동으로 빈 공간에 라벨표시
-plt.show()
-
-
-#5. 데이터 summit
-y_summit = model.predict(test_set)
-y_summit = y_summit.flatten()                 
-y_summit = np.where(y_summit > 0.55, 1 , 0)   
-# print(y_summit)
-# print(y_summit.shape)
-
-# submission = pd.read_csv('./_data/kaggle_titanic/submission.csv')
-# submission['Survived'] = y_summit
-# print(submission)
-# submission.to_csv('./_data/kaggle_titanic/submission1.csv', index=False)
-
-
-#============================ Scaler 적용 전 데이터 ===============================#
-# loss :  0.3597975969314575
-# acc 스코어 :  0.8777777777777778
-# mse : 0.10813453793525696  
-#==================================================================================#
-
-#=========================== MinMaxScaler 적용 후 데이터 ============================#
-# loss :  0.41818588972091675
-# acc 스코어 :  0.8222222222222222
-# mse : 0.13064371049404144  
-#==================================================================================#
-
-#=========================== StandardScaler 적용 후 데이터 =========================#
-# loss :  0.394330769777298
-# acc 스코어 : 0.8444444444444444
-# mse : 0.12095355987548828
-#==================================================================================#
-
-#=========================== MaxAbsScaler 적용 후 데이터 ===========================#
-# loss :  0.4244685769081116
-# acc 스코어 : 0.8444444444444444
-# mse : 0.13133832812309265
-#==================================================================================#
-
-#=========================== RobustScaler 적용 후 데이터 ===========================#
-# loss :  0.38997960090637207
-# acc 스코어 : 0.8555555555555555
-# mse : 0.12007081508636475
-#==================================================================================#
+#================================= 1. 기본 출력 ===================================#
+# loss :  [0.4250982105731964, 0.13266293704509735]
+# acc 스코어 :  0.8444444444444444
+# 12_0707_2059_0092-0.4159.hdf5
+#=================================================================================#

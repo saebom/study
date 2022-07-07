@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler, RobustScaler
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.models import Sequential, Model
+from tensorflow.python.keras.layers import Dense, Input
 from tensorflow.python.keras.callbacks import EarlyStopping
 from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
 import time
@@ -91,18 +91,28 @@ x_train, x_test, y_train, y_test = train_test_split(
 # scaler = MinMaxScaler()
 # scaler = StandardScaler()
 # scaler = MaxAbsScaler()
-scaler = RobustScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
-x_test = scaler.transform(x_test)
+# scaler = RobustScaler()
+# scaler.fit(x_train)
+# x_train = scaler.transform(x_train)
+# x_test = scaler.transform(x_test)
 
 # 2. 모델 구성
-model = Sequential()
-model.add(Dense(100, activation='linear', input_dim=7))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
+# model = Sequential()
+# model.add(Dense(100, activation='linear', input_dim=7))
+# model.add(Dense(100, activation='relu'))
+# model.add(Dense(100, activation='relu'))
+# model.add(Dense(100, activation='relu'))
+# model.add(Dense(1, activation='sigmoid'))
+
+# 함수형 모델
+input1 = Input(shape=(7,))
+dense1 = Dense(100)(input1)
+dense2 = Dense(100, activation='relu')(dense1)
+dense3 = Dense(100, activation='relu')(dense2)
+dense4 = Dense(100, activation='relu')(dense3)
+output1 = Dense(1, activation='sigmoid')(dense4)
+model = Model(inputs=input1, outputs=output1)
+
 
 #3. 훈련
 model.compile(loss='binary_crossentropy', optimizer='adam',
@@ -136,13 +146,16 @@ acc = accuracy_score(y_test, y_predict)
 print("=====================================================================")   
 print('acc 스코어 : ', acc)  
 
+print("=================================================================")
+print("걸린시간 : ", end_time)
+
 # print("===================================================================")   
 # print(hist)     
 # print("===================================================================")
 # print(hist.history)   
-print("=====================================================================")
-print(hist.history['loss'])
-print("=====================================================================")
+# print("=====================================================================")
+# print(hist.history['loss'])
+# print("=====================================================================")
 # print(hist.history['val_loss'])
 
 
@@ -175,32 +188,16 @@ y_summit = np.where(y_summit > 0.55, 1 , 0)
 # submission.to_csv('./_data/kaggle_titanic/submission1.csv', index=False)
 
 
-#============================ Scaler 적용 전 데이터 ===============================#
-# loss :  0.3597975969314575
-# acc 스코어 :  0.8777777777777778
-# mse : 0.10813453793525696  
+#================================== Sequential 모델 ===============================#
+# 걸린시간 : 7.495168447494507
+# loss :  0.39098089933395386
+# mse :  0.11873999983072281
+# accuracy_score :  0.8666666666666667
 #==================================================================================#
 
-#=========================== MinMaxScaler 적용 후 데이터 ============================#
-# loss :  0.41818588972091675
-# acc 스코어 :  0.8222222222222222
-# mse : 0.13064371049404144  
-#==================================================================================#
-
-#=========================== StandardScaler 적용 후 데이터 =========================#
-# loss :  0.394330769777298
-# acc 스코어 : 0.8444444444444444
-# mse : 0.12095355987548828
-#==================================================================================#
-
-#=========================== MaxAbsScaler 적용 후 데이터 ===========================#
-# loss :  0.4244685769081116
-# acc 스코어 : 0.8444444444444444
-# mse : 0.13133832812309265
-#==================================================================================#
-
-#=========================== RobustScaler 적용 후 데이터 ===========================#
-# loss :  0.38997960090637207
-# acc 스코어 : 0.8555555555555555
-# mse : 0.12007081508636475
+#==================================== 함수형 모델 ==================================#
+# 걸린시간 : 8.168940305709839
+# loss :  0.4084376096725464
+# mse :  0.12593376636505127
+# accuracy_score : 0.8555555555555555
 #==================================================================================#

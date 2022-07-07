@@ -4,8 +4,8 @@ x = np.array([1, 2, 3])
 y = np.array([1, 2, 3])
 
 #2. 모델구성
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
 
 model = Sequential()
 model.add(Dense(4, input_dim=1))   
