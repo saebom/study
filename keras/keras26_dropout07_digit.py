@@ -4,7 +4,7 @@ from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.python.keras.models import Sequential, Model, load_model
-from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.layers import Dense, Input, Dropout
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import r2_score, accuracy_score
 import time
@@ -35,8 +35,11 @@ x_test = scaler.transform(x_test)
 #2. 모델 구성
 model = Sequential()
 model.add(Dense(100, activation='linear', input_dim=64))
+model.add(Dropout(0.2))
 model.add(Dense(100, activation='relu'))
+model.add(Dropout(0.1))
 model.add(Dense(100, activation='relu'))
+model.add(Dropout(0.1))
 model.add(Dense(100, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
@@ -50,7 +53,7 @@ date = datetime.datetime.now()      # 2022-07-07 17:21:42.275191
 date = date.strftime("%m%d_%H%M")   # 0707_1723
 print(date)
 
-filepath = './_ModelCheckPoint/k24/'
+filepath = './_ModelCheckPoint/k26/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
 
 earlyStopping = EarlyStopping(monitor = 'val_loss', patience=50, mode='min', verbose=1, 
@@ -82,3 +85,8 @@ print('accuracy : ', acc)
 # 07_0707_1954_0033-0.1017.hdf5
 #=================================================================================#
 
+#================================ 2. dorpout 적용 ================================#
+# loss :  0.18787507712841034
+# accuracy :  0.9666666388511658
+# 07_0708_1117_0041-0.0401.hdf5
+#=================================================================================#
