@@ -17,7 +17,7 @@ tf.random.set_seed(777)
 print(x_train.shape, y_train.shape)     # (50000, 32, 32, 3) (50000, 1)
 print(x_test.shape, y_test.shape)       # (10000, 32, 32, 3) (10000, 1)
 
-# scale 픽셀 (이미지를 0 ~ 255 -> 0 ~ 1 범위로 만들어줌)
+# scale (이미지를 0 ~ 255 -> 0 ~ 1 범위로 만들어줌)
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32' )
 x_train = x_train/255
@@ -52,7 +52,7 @@ model.add(Dropout(0.25))
 model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
 model.add(MaxPooling2D(2, 2))     
 model.add(Dropout(0.4))     
-model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))   
+model.add(Conv2D(254, (3, 3), padding='same', activation='relu'))   
 model.add(MaxPooling2D(2, 2))     
 model.add(Dropout(0.4))                 
 # model.add(Conv2D(256, (3, 3), padding='same',                  
@@ -128,6 +128,6 @@ plt.show()
 
 
 #=============================== loss, accuracy =====================================#
-# loss :  1.8879083395004272
-# accuracy :  0.49619999527931213
+# loss :  1.872557282447815
+# accuracy :  0.5112000107765198
 #====================================================================================#

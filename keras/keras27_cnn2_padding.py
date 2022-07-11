@@ -4,7 +4,7 @@ from tensorflow.python.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D
 model = Sequential()
 model.add(Conv2D(filters=64, kernel_size=(3, 3),    # 출력 : (N, 28, 28, 64) => padding = 'same'이므로
                  padding='same', 
-                 input_shape=(28, 28, 1)))
+                 input_shape=(28, 28, 1)))          # input 데이터의 데이터 갯수는 None으로 무시, (데이터 갯수 = batch_size) 
 
 model.add(MaxPooling2D())           # 출력 : (N, 14, 14, 64)
             

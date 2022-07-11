@@ -25,6 +25,8 @@ x_test = x_test.reshape(10000, 28, 28, 1)   # (10000, 28, 28) (10000,)
 # acc 0.98 이상
 # convolution 3개 이상 사용
 
+
+# One Hot Encoding
 import pandas as pd
 # df = pd.DataFrame(y)
 y_train = pd.get_dummies(y_train)
@@ -33,23 +35,19 @@ print(y_train)
 print(y_train.shape)
 
 
-
 #2. 모델링 
 model = Sequential()
 model.add(Conv2D(filters=32, kernel_size=(4, 4),    
                  padding='same', 
-                 input_shape=(28, 28, 1)))
+                 input_shape=(28, 28, 1)))      
 model.add(MaxPooling2D(2, 2))           
 model.add(Dropout(0.2))
-model.add(Conv2D(64, (4, 4), 
-                 padding='valid',                  
-                 activation='relu'))                
+model.add(Conv2D(64, (4, 4), padding='valid', activation='relu'))                
 model.add(MaxPooling2D(2, 2))          
 model.add(Dropout(0.2))
-model.add(Conv2D(64, (4, 4), 
-                 padding='same',                  
-                 activation='relu'))
+model.add(Conv2D(64, (4, 4), padding='same', activation='relu'))
 model.add(Dropout(0.2))
+
 model.add(Flatten())    # (N, 63)  (N, 175)
 model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.2))
@@ -97,7 +95,7 @@ y_test = tf.argmax(y_test, axis=1)
 
 
 
-#=========================================== 내용 정리 ======================================================#
+#=============================== loss, accuracy ====================================#
 # loss :  0.04272077605128288
 # accuracy :  0.9915000200271606
-#==============================================================================================================#
+#===================================================================================#
