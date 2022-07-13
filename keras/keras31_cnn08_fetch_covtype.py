@@ -4,12 +4,14 @@ from sklearn.datasets import fetch_covtype
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.python.keras.models import Sequential, Model
-from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.layers import Dense, Input, Dropout
+from tensorflow.python.keras.layers import Conv2D, Flatten, MaxPooling2D
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import r2_score, accuracy_score
 import time
 import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
+
 
 #1. 데이터
 datasets = fetch_covtype()
@@ -26,20 +28,39 @@ y = onehot_encoder.transform(y)
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.7, random_state=66
 )
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)  # (406708, 54) (174304, 54) (406708, 7) (174304, 7)
 
 
-scaler = RobustScaler()
+scaler = StandardScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
+x_train = x_train.reshape(406708, 3, 6, 3) 
+x_test = x_test.reshape(174304, 3, 6, 3)
+print(x_train.shape)    
+print(np.unique(x_train, return_counts=True))
+
 
 #2. 모델 구성
 model = Sequential()
-model.add(Dense(100, activation='linear', input_dim=54))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(2, 2), padding='same', 
+                 activation='relu', input_shape=(3, 6, 3)))
+model.add(Dropout(0.25))     
+model.add(Conv2D(64, (2, 2), padding='same', activation='relu'))                
+model.add(Dropout(0.25))     
+model.add(Conv2D(128, (2, 2), padding='same', activation='relu'))
+model.add(Dropout(0.4))     
+model.add(Conv2D(128, (2, 2), padding='same', activation='relu'))   
+model.add(Dropout(0.25))                 
+model.add(Conv2D(64, (2, 2), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+model.add(Conv2D(32, (2, 2), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+
+model.add(Flatten())   
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(7, activation='softmax'))
 
 
@@ -63,7 +84,7 @@ mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1,
                       )
 
 start_time = time.time()
-hist = model.fit(x_train, y_train, epochs=5000, batch_size=128, 
+hist = model.fit(x_train, y_train, epochs=500, batch_size=256, 
                  validation_split=0.2,
                 #  validation_data=(x_val,y_val),
                  callbacks=[earlyStopping, mcp],

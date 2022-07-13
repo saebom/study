@@ -23,7 +23,7 @@ print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (398, 30) (171
 
 scaler = RobustScaler()
 scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+x_train = scaler.transform(x_train) 
 x_test = scaler.transform(x_test)
 
 x_train = x_train.reshape(398, 6, 5, 1) 

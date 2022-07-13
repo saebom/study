@@ -4,9 +4,9 @@ from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler, RobustScaler
 from tensorflow.python.keras.models import Sequential, Model, load_model
-from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.layers import Dense, Input, Dropout
+from tensorflow.python.keras.layers import Conv2D, Flatten
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.python.keras.layers import Conv2D, Flatten, MaxPooling2D, Dropout
 from sklearn.metrics import r2_score, accuracy_score
 import time
 import matplotlib.pyplot as plt

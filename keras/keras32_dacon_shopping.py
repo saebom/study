@@ -9,7 +9,7 @@ from tensorflow.python.keras.models import Sequential, Model, load_model
 from tensorflow.python.keras.layers import Dense, Dropout
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
-import seaborn as sns
+from scipy.stats import skew
 import time
 import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
@@ -27,6 +27,7 @@ print(train_set.info())
 print(train_set.describe())
 print(train_set.isnull().sum())  # 'Promotion1', 'Promotion2', 'Promotion3', 'Promotion4', 'Promotion5'
 
+
 test_set = pd.read_csv(path + 'test.csv')
 print(test_set)
 print(test_set.shape)   # (180, 12)
@@ -37,69 +38,115 @@ print(test_set.info())
 print(test_set.describe())
 print(test_set.isnull().sum())  # 'Promotion1', 'Promotion2', 'Promotion3', 'Promotion4'
 
-# 결측치 처리 
-# Promotion NaN값 변환
-train_set['Promotion1'] = train_set['Promotion1'].fillna(train_set['Promotion1'].mode()[0])
-train_set['Promotion2'] = train_set['Promotion2'].fillna(train_set['Promotion2'].mode()[0])
-train_set['Promotion3'] = train_set['Promotion3'].fillna(train_set['Promotion3'].mode()[0])
-train_set['Promotion4'] = train_set['Promotion4'].fillna(train_set['Promotion4'].mode()[0])
-train_set['Promotion5'] = train_set['Promotion5'].fillna(train_set['Promotion5'].mode()[0])
+###### 데이터 전처리 ######
 
-test_set['Promotion1'] = test_set['Promotion1'].fillna(test_set['Promotion1'].mode()[0])
-test_set['Promotion2'] = test_set['Promotion2'].fillna(test_set['Promotion2'].mode()[0])
-test_set['Promotion3'] = test_set['Promotion3'].fillna(test_set['Promotion3'].mode()[0])
-test_set['Promotion4'] = test_set['Promotion4'].fillna(test_set['Promotion4'].mode()[0])
-test_set['Promotion5'] = test_set['Promotion5'].fillna(train_set['Promotion5'].mode()[0])
+# Date 날짜 변수 분리 
+# train_set['Date'] = pd.to_datetime(train_set['Date'])
+# train_set['year'] = train_set['Date'].dt.year
+# train_set['month'] = train_set['Date'].dt.month
+# train_set['week'] = train_set['Date'].dt.isocalendar().week
+# train_set['quarter'] = train_set['Date'].dt.quarter
+# train_set['day_of_week'] = train_set['Date'].dt.day_name()
+# print(train_set.head(5))
 
-# Date 칼럼에서 "월"에 해당하는 정보만 추출하여 숫자 형태로 반환
-def get_month(date):
-    month = date[3:5]
-    month = int(month)
-    return month
 
-# 이 함수를 Date 칼럼에 적용한 Month 칼럼을 만들어줍니다.
-train_set['Month'] = train_set['Date'].apply(get_month)
-test_set['Month'] = test_set['Date'].apply(get_month)
+#  Weekly_Sales 그래프 확인
+# plt.hist(train_set.Weekly_Sales, bins=50)
+# plt.show()
 
-# 결과를 확인합니다.
-print(train_set)
+# 매장별 주간매출액
+pd.options.display.float_format = '{:.2f}'.format
+dm = train_set.groupby('Store')['Weekly_Sales'].agg(**{'mean_Weekly_Sales':'mean'}).sort_values('mean_Weekly_Sales', ascending=False)
+print(dm)
+
+# 지점별 상관관계 분석
+from matplotlib import dates
+import seaborn as sns
+# fig = plt.figure(figsize=(35,35))
+# fig.set_facecolor('white')
+
+# for i in range(35, 36):
+#     train1 = train_set[train_set.Store == i] 
+#     plt.figure(figsize=(18, 18))
+#     sns.heatmap(data=train1.corr(), annot=True)
+# plt.show()
+
+# Weekly_Sales 제거
+label = train_set['Weekly_Sales']
+all_data_set = pd.concat((train_set, test_set)).reset_index(drop=True)
+all_data_set = all_data_set.drop(['Weekly_Sales'], axis=1)
+print(all_data_set.shape)   
+print(all_data_set) # (6435, 12)
+
+# Date 날짜 변수 분리 
+all_data_set['Date'] = pd.to_datetime(all_data_set['Date'])
+all_data_set['year'] = all_data_set['Date'].dt.year
+all_data_set['month'] = all_data_set['Date'].dt.month
+all_data_set['week'] = all_data_set['Date'].dt.isocalendar().week
+all_data_set['quarter'] = all_data_set['Date'].dt.quarter
+all_data_set['day_of_week'] = all_data_set['Date'].dt.day_name()
+print(all_data_set.head(5))
+
+
+fig = plt.figure(figsize=(35,35))
+fig.set_facecolor('white')
+
+for i in range(35, 36):
+    all_data1 = all_data_set[all_data_set.Store == i] 
+    plt.figure(figsize=(18, 18))
+    sns.heatmap(data=all_data1.corr(), annot=True)
+plt.show()
+
 
 # Date의 object 데이터를 int64 데이터로 변환 및 결측치 제거
-cat_col = train_set.dtypes[train_set.dtypes == 'object'].index   
+cat_col = all_data_set.dtypes[all_data_set.dtypes == 'object'].index   
 for col in cat_col:
-    train_set[col] = train_set[col].fillna('None')
-    train_set[col] = LabelEncoder().fit_transform(train_set[col].values)
-print(train_set.head(5))     # ==> 2줄까지 출력하여 확인  
+    all_data_set[col] = all_data_set[col].fillna('None')
+    all_data_set[col] = LabelEncoder().fit_transform(all_data_set[col].values)
+print(all_data_set.head(5))     # ==> 5줄까지 출력하여 확인  
   
-cat_col = test_set.dtypes[test_set.dtypes == 'object'].index   
-for col in cat_col:
-    test_set[col] = test_set[col].fillna('None')
-    test_set[col] = LabelEncoder().fit_transform(test_set[col].values)
-       
-train_set['IsHoliday'] = train_set['IsHoliday'].fillna(train_set.IsHoliday.dropna().mode()[0])
-train_set['IsHoliday'] = train_set['IsHoliday'].apply(np.round).astype('float64')
-test_set['IsHoliday'] = test_set['IsHoliday'].fillna(train_set.IsHoliday.dropna().mode()[0])
-test_set['IsHoliday'] = test_set['IsHoliday'].apply(np.round).astype('float64')
+all_data_set['IsHoliday'] = all_data_set['IsHoliday'].fillna(all_data_set.IsHoliday.dropna().mode()[0])
+all_data_set['IsHoliday'] = all_data_set['IsHoliday'].apply(np.round).astype('float64')
 
-print(train_set.shape, test_set.shape)      # (6255, 13) (180, 12)                                                  
-print(train_set.head(), test_set.head())
-        
-train_set = train_set.drop(columns=['id', 'Date'])
-test_set = test_set.drop(columns=['id', 'Date'])
-        
-x = train_set.drop(['Weekly_Sales'], axis=1)
-print(x)
-print(x.columns)
-# print(x.shape)  
+print(all_data_set.shape)      # (6255, 13) (180, 12)                                                  
+print(all_data_set.head())
 
-y = train_set['Weekly_Sales']
-print(y)
-print(y.shape)
 
-x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size=0.9, shuffle=True, random_state=31
-)
-print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
+# feature 제거        
+all_data_set = all_data_set.drop(columns=['id', 'Date'])
+all_data_set = all_data_set.drop(columns=['Fuel_Price', 'Promotion1', 'Promotion2', 'Promotion4', 'year'])
+print(all_data_set.head())
+
+# 데이터 확인
+print(all_data_set.isnull().sum())
+
+# 결측치 처리 
+# Promotion NaN값 변환
+all_data_set['Promotion3'] = all_data_set['Promotion3'].fillna(all_data_set['Promotion3'].median())
+all_data_set['Promotion5'] = all_data_set['Promotion5'].fillna(all_data_set['Promotion5'].median())
+print(all_data_set.head(5))
+print(all_data_set.isnull().sum())
+ 
+# get_dummies
+all_data = pd.get_dummies(all_data_set)
+print(all_data_set.shape)   # (6435, 10)
+
+######## Model libraries import ########
+# all_data_set을 train_set과 test_set으로 분할
+train_set = all_data_set[:len(train_set)]
+test_set = all_data_set[len(test_set):]
+print(train_set.shape, test_set.shape)  # (6255, 15) (180, 15)
+
+x = train_set
+y = label
+
+print(x.shape, y.shape) # (6255, 15) (6255,)
+
+# train 데이터와 test 데이터의 분리
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9713, random_state =31)
+
+# train 데이터와 test 데이터의 분리 결과 확인
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (6075, 10) (180, 10) (6075,) (180,)
 
 # scaler = MinMaxScaler()
 scaler = StandardScaler()
@@ -112,13 +159,11 @@ x_test = scaler.transform(x_test)
 
 # 2. 모델 구성
 model = Sequential()
-model.add(Dense(128, activation='linear', input_dim=11))
-model.add(Dropout(0.2))     
+model.add(Dense(128, activation='linear', input_dim=10))
 model.add(Dense(128, activation='relu'))
 model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.2))     
 model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.2))     
+model.add(Dense(32, activation='relu'))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(1, activation='linear'))
 
@@ -141,7 +186,7 @@ mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1,
                       filepath="".join([filepath, '01_', date, '_', filename])
                       )
 start_time = time.time() 
-hist = model.fit(x_train, y_train, epochs=500, batch_size=32,
+hist = model.fit(x_train, y_train, epochs=1000, batch_size=128,
                  validation_split=0.2,
                  callbacks=[earlyStopping],
                  verbose=1)
@@ -166,37 +211,16 @@ r2 = r2_score(y_test, y_predict)
 print("R2 : ", r2)  
 
 #### summit ####
-y_summit = model.predict(test_set)
+y_summit = model.predict(x_test)
 print(y_summit)
-print(y_summit.shape)   # (1458, 1)
+print(y_summit.shape)   # (180, 15)
 
 submission = pd.read_csv(path + 'submission.csv')
 submission['Weekly_Sales'] = y_summit
-
-# Brutal approach to deal with predictions close to outer range 
-q1 = submission['Weekly_Sales'].quantile(0.0045)
-q2 = submission['Weekly_Sales'].quantile(0.99)
-
-submission['Weekly_Sales'] = submission['Weekly_Sales'].apply(lambda x: x if x > q1 else x*0.77)
-submission['Weekly_Sales'] = submission['Weekly_Sales'].apply(lambda x: x if x < q2 else x*1.1)
-
 submission.to_csv(path + 'submission1.csv', index=False)
 
 
 #4_1. 그래프로 비교
-# plt.figure(figsize=(9,6))
-# plt.plot(hist.history['Weely_Sales'], marker='.', c='red', label='loss')
-# plt.plot(hist.history['Promotion1'], marker='.', c='blue', label='val_loss')
-# plt.grid()
-# # plt.title('loss & val_loss')    
-# plt.title('Weekly_Sales & Promotion1')    
-# plt.ylabel('loss')
-# plt.xlabel('epochs')
-# plt.legend()   # 자동으로 빈 공간에 라벨표시
-# plt.show()
-
-
-#4_2. loss & val_loss
 font_path = 'C:\Windows\Fonts\malgun.ttf'
 font = font_manager.FontProperties(fname=font_path).get_name()
 rc('font', family=font)
@@ -221,7 +245,7 @@ plt.show()
 
 
 #====================================== 결과2 =======================================#
-# loss :  [412308.9375, 271772106752.0]
-# RMSE :  521317.6636425292
-# R2 :  0.16262125708309716
+# loss :  [204932.28125, 107756879872.0]
+# RMSE :  328263.4366404997
+# R2 : 0.6418582901643641
 #===================================================================================#

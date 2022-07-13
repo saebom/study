@@ -4,7 +4,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.python.keras.models import Sequential, Model
-from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.layers import Dense, Input, Conv2D, Flatten, Dropout
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
 import time
@@ -221,20 +221,39 @@ print(x.shape, y.shape)
 # train 데이터와 test 데이터의 분리
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, random_state =7)
 # train 데이터와 test 데이터의 분리 결과 확인
-print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1166, 80) (292, 80) (1166,) (292,)
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1312, 79) (146, 79) (1312,) (146,)
 
 scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
+x_train = x_train.reshape(1312, 79, 1, 1) 
+x_test = x_test.reshape(146, 79, 1, 1)
+print(x_train.shape)    
+print(np.unique(x_train, return_counts=True))
+
+
+
 # 2. 모델구성
 model = Sequential()
-model.add(Dense(100, activation='linear', input_dim=79))
-model.add(Dense(100, activation ='relu'))
-model.add(Dense(100, activation ='relu'))
-model.add(Dense(100, activation ='relu'))
-model.add(Dense(100, activation ='relu'))
+model.add(Conv2D(filters=64, kernel_size=(1, 1), padding='same', 
+                 activation='relu', input_shape=(79, 1, 1)))
+model.add(Dropout(0.25))     
+model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.25))     
+model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))
+model.add(Dropout(0.4))     
+model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))   
+model.add(Dropout(0.25))                 
+model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+model.add(Conv2D(32, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+
+model.add(Flatten())   
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(1, activation='linear'))
 
 
@@ -257,9 +276,9 @@ mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1,
                       filepath="".join([filepath, '11_', date, '_', filename])
                       )
 start_time = time.time()
-hist = model.fit(x_train, y_train, epochs=4000, batch_size=100,
+hist = model.fit(x_train, y_train, epochs=1000, batch_size=100,
                  validation_split=0.2,
-                 callbacks=[earlyStopping, mcp],
+                 callbacks=[earlyStopping],
                  verbose=1)
 end_time = time.time() - start_time
 
@@ -281,8 +300,12 @@ print("RMSE : ", rmse)
 r2 = r2_score(y_test, y_predict)
 print("R2 : ", r2)  
 
+
 #================================= 1. 기본 출력 ===================================#
-# loss :  [18550.765625, 851050688.0]
-# R2 :  0.9046833646559465
-# 11_0707_2101_0354-16371.7607.hdf5
+# loss :  [40.085575103759766, 4064.751220703125]
+# RMSE :  63.75540693356681
+# R2 :  0.8754794973255795
 #=================================================================================#
+
+
+

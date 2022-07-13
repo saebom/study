@@ -6,6 +6,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Ro
 from tensorflow.python.keras.models import Sequential, Model, load_model
 from tensorflow.python.keras.layers import Dense, Input, Dropout
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.python.keras.layers import Conv2D, Flatten
 from sklearn.metrics import r2_score, accuracy_score
 import time
 import matplotlib.pyplot as plt
@@ -26,19 +27,39 @@ print(y.shape)  # (150, 3)
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.7, random_state=66
 )
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)  # (105, 4) (45, 4) (105, 3) (45, 3)
+
+scaler = MinMaxScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
+
+x_train = x_train.reshape(105, 2, 2, 1) 
+x_test = x_test.reshape(45, 2, 2, 1)
+print(x_train.shape)    
+print(np.unique(x_train, return_counts=True))
 
 #2. 모델 구성
 model = Sequential()
-model.add(Dense(100, activation='linear', input_dim=4))
+model.add(Conv2D(filters=64, kernel_size=(1, 1), padding='same', 
+                 activation='relu', input_shape=(2, 2, 1)))
+model.add(Dropout(0.25))     
+model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.25))     
+model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))
+model.add(Dropout(0.4))     
+model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))   
+model.add(Dropout(0.25))                 
+model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+model.add(Conv2D(32, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+
+model.add(Flatten())   
+model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(100, activation='relu'))
-model.add(Dropout(0.1))
-model.add(Dense(100, activation='relu'))
-model.add(Dropout(0.1))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(3, activation='softmax'))   # 결과값 label이 3개이므로 output 노드의 갯수는 3이 됨 
-                                            # softmax를 통해 제일 큰 값이 선택됨(softmax의 값은 전체 합계 1.0이 됨)
-                                            # class: 1) Iris-Setosa  2) Iris-Versicolour  3) Iris-Virginica
+model.add(Dense(3, activation='softmax'))
+model.summary()
 
 
 #3. 훈련
@@ -62,7 +83,7 @@ start_time = time.time()
 
 hist = model.fit(x_train, y_train, epochs=1000, batch_size=10, 
                  validation_split=0.2,
-                 callbacks=[earlyStopping, mcp],
+                 callbacks=[earlyStopping],
                  verbose=1)
 end_time = time.time() - start_time
 
@@ -74,14 +95,12 @@ print('accuracy : ', acc)
 
 
 
-#================================= 1. 기본 출력 ===================================#
-# loss :  0.07862314581871033
-# accuracy :  0.9555555582046509
-# 05_0707_1934_0203-0.0039.hdf5
-#=================================================================================#
-
-#================================ 2. dorpout 적용 ================================#
+#=================================== CNN 출력 ====================================#
 # loss :  0.0650220736861229
 # accuracy :  0.9777777791023254
-# 05_0708_1108_0101-0.0034.hdf5
+#=================================================================================#
+
+#=================================== DNN 적용 ====================================#
+# loss :  0.14293155074119568
+# accuracy :  0.9555555582046509
 #=================================================================================#

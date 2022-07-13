@@ -4,7 +4,8 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.python.keras.models import Sequential, Model, load_model
-from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.layers import Dense, Dropout
+from tensorflow.python.keras.layers import Conv2D, Flatten, MaxPooling2D
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
 import time
@@ -24,19 +25,44 @@ train_set = train_set.dropna()  # nan 값 삭제
 
 x = train_set.drop(['count'], axis=1)
 y = train_set['count']
+print(x.shape, y.shape)  # (1328, 9) (1328,)
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size=0.7, random_state=66
+    x, y, test_size=0.2, random_state=66
 )
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1062, 9) (266, 9) (1062,) (266,)
 
+scaler = StandardScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
-#2. 모델구성
+x_train = x_train.reshape(1062, 3, 3, 1)
+x_test = x_test.reshape(266, 3, 3, 1)
+print(x_train.shape)    
+print(np.unique(x_train, return_counts=True))
+
+#2. 모델구성 
 model = Sequential()
-model.add(Dense(100, activation = 'linear', input_dim=9))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(2, 2), padding='same', 
+                 activation='relu', input_shape=(3, 3, 1)))
+model.add(Dropout(0.25))     
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))                
+model.add(Dropout(0.25))     
+model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
+model.add(Dropout(0.4))     
+model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))   
+model.add(Dropout(0.25))                 
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+
+model.add(Flatten())   
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(1, activation='linear'))
+model.summary()
 
 
 

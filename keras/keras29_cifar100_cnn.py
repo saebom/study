@@ -1,6 +1,6 @@
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout
-from tensorflow.keras.datasets import cifar100
+from keras.datasets import cifar100
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import accuracy_score
 import numpy as np

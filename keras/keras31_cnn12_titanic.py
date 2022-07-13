@@ -3,13 +3,13 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler, RobustScaler
-from tensorflow.python.keras.models import Sequential, Model, load_model
-from tensorflow.python.keras.layers import Dense, Input
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense, Conv2D, Flatten, Dropout
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
-from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
+from sklearn.metrics import r2_score, accuracy_score
 import time
 import matplotlib.pyplot as plt
-from matplotlib import font_manager, rc
+from matplotlib import rc
 
 
 # 1. 데이터
@@ -71,20 +71,44 @@ print(y.shape)  # (891,)
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.9, shuffle=True, random_state=23
 )
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)  # (801, 7) (90, 7) (801,) (90,)
+
+scaler = MinMaxScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
+
+x_train = x_train.reshape(801, 7, 1, 1) 
+x_test = x_test.reshape(90, 7, 1, 1)
+print(x_train.shape)    
+print(np.unique(x_train, return_counts=True))
 
 
 # 2. 모델 구성
 model = Sequential()
-model.add(Dense(100, activation='linear', input_dim=7))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
+model.add(Conv2D(filters=64, kernel_size=(1, 1), padding='same', 
+                 activation='relu', input_shape=(7, 1, 1)))
+model.add(Dropout(0.25))     
+model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.25))     
+model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))
+model.add(Dropout(0.4))     
+model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))   
+model.add(Dropout(0.25))                 
+model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+model.add(Conv2D(32, (1, 1), padding='same', activation='relu'))                
+model.add(Dropout(0.2))   
+
+model.add(Flatten())   
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(1, activation='linear'))
+model.summary()
 
 
 # 3. 훈련
 model.compile(loss='binary_crossentropy', optimizer='adam',
-            #   metrics=['accuracy'],
               metrics=['accuracy', 'mse'])  
 
 import datetime
@@ -103,9 +127,9 @@ mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1,
                       filepath="".join([filepath, '12_', date, '_', filename])
                       )
 start_time = time.time() 
-hist = model.fit(x_train, y_train, epochs=500, batch_size=37,
+hist = model.fit(x_train, y_train, epochs=500, batch_size=32,
                  validation_split=0.2,
-                 callbacks=[earlyStopping, mcp],
+                 callbacks=[earlyStopping],
                  verbose=1)
 end_time = time.time() - start_time
 
@@ -128,7 +152,6 @@ print('acc 스코어 : ', acc)
 
 
 #================================= 1. 기본 출력 ===================================#
-# loss :  [0.4250982105731964, 0.13266293704509735]
-# acc 스코어 :  0.8444444444444444
-# 12_0707_2059_0092-0.4159.hdf5
+# loss :  [0.40853211283683777, 0.1260533481836319]
+# acc 스코어 :  0.8555555555555555
 #=================================================================================#
