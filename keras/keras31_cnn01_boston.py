@@ -49,6 +49,7 @@ model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))
 model.add(Dropout(0.2))
 
 model.add(Flatten())    # (N, 63)  (N, 175)
+# dense1 = Dense(, activation='relu')()
 model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(128, activation='relu'))
