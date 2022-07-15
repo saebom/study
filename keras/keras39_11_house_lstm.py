@@ -244,14 +244,15 @@ model.add(Dense(100, activation ='relu'))
 model.add(Dense(100, activation ='relu'))
 model.add(Dense(100, activation ='relu'))
 model.add(Dense(1, activation='linear'))
+model.summary()
 
 
 #3. 컴파일, 훈련
 model.compile(loss='mae', optimizer='adam', metrics=['mse'])
 
 import datetime
-date = datetime.datetime.now()      # 2022-07-07 17:21:42.275191
-date = date.strftime("%m%d_%H%M")   # 0707_1723
+date = datetime.datetime.now()      
+date = date.strftime("%m%d_%H%M")   
 print(date)
 
 filepath = './_ModelCheckPoint/k24/'

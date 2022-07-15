@@ -58,23 +58,23 @@ output3 = Dense(10, activation='relu', name='out_sb3')(dense23)
 
 from tensorflow.python.keras.layers import concatenate, Concatenate
 merge1 = concatenate([output1, output2, output3], name='mg1')
-# merge2 = Dense(2, activation='relu', name='mg2')(merge1)
-# merge3 = Dense(3, name='mg3')(merge2)
-# last_output1 = Dense(1, name='last1')(merge3)
+merge2 = Dense(2, activation='relu', name='mg2')(merge1)
+merge3 = Dense(3, name='mg3')(merge2)
+last_output1 = Dense(1, name='last1')(merge3)
 # last_output2 = Dense(1, name='last2')(merge3)
 
-#2-4. y 모델1
-merge2 = Dense(32, activation='relu', name='mg2_1')(merge1)
-merge3 = Dense(16, name='mg3_1')(merge2)
-last_output1 = Dense(1, name='last1')(merge3)
+#2-4. y1 모델
+merge2 = Dense(64, activation='relu', name='mg2')(merge1)
+merge3 = Dense(64, name='mg3')(merge2)
+last_output2 = Dense(1, name='last1')(merge3)
 
-#2-5. y 모델2
-merge4 = Dense(64, activation='relu', name='mg2_2')(merge1)
-merge5 = Dense(32, name='mg3_2')(merge4)
-last_output2 = Dense(1, name='last2')(merge5)
+#2-5. y2 모델
+merge4 = Dense(64, activation='relu', name='mg4')(merge1)
+merge5 = Dense(32, name='mg5')(merge4)
+last_output3 = Dense(1, name='last2')(merge5)
 
 # 모델 정의
-model = Model(inputs=[input1, input2, input3], outputs=[last_output1, last_output2])
+model = Model(inputs=[input1, input2, input3], outputs=[last_output2, last_output3])
 model.summary()
 
 # [실습]
@@ -113,7 +113,6 @@ print('loss(y1) : ', loss_1)
 print('loss(y2) : ', loss_2)
 
 from sklearn.metrics import r2_score
-import tensorflow as tf
 
 y1_predict, y2_predict = model.predict([x1_test, x2_test, x3_test])
 
@@ -126,9 +125,9 @@ print("R2(y2) : ", r2_2)
 
 #================================================= ensemble ==============================================#
 #               loss - last_loss - last_mse - val_loss - val_last_loss 
-# loss(y1) :  [1806.318603515625, 4.766019821166992, 1801.5526123046875, 26.796558380126953, 3245598.5]
-# loss(y2) :  [1797.54296875, 1795.23388671875, 2.309100866317749, 3222869.0, 8.672334671020508]
-# R2(y1) :  0.9677236348500264
-# R2(y2) :  0.9895542003509916
+# loss(y1) :  [1802.688232421875, 2.30194091796875, 1800.38623046875, 9.270050048828125, 3241391.25]
+# loss(y2) :  [1801.4617919921875, 1800.8804931640625, 0.5812454223632812, 3243179.0, 0.5378387570381165]
+# R2(y1) :  0.9888342545052683
+# R2(y2) :  0.9993521749400164
 #==========================================================================================================#
 
