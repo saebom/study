@@ -21,15 +21,64 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, random_state=32
 )
 
+
+print(x.shape, y.shape) # (13, 3) (13,)
+
+# x의 shape = (행, 열, 몇 개씩 자르는지(timesteps)!!!) => timesteps
+x = x.reshape(13, 3, 1)
+print(x.shape) # (13, 3, 1)
+
+
 #2. 모델구성
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import LSTM, Dense
 
 model = Sequential()
 model.add(LSTM(10, return_sequences=True, input_shape=(3, 1)))    #  [batch, timesteps, feature]   (N, 3, 1) => (N,3,10)
-model.add(LSTM(5, return_sequences=False))         
+model.add(LSTM(5, return_sequences=True))         
 model.add(Dense(1))
 model.summary()
 
+
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+
+import datetime
+date = datetime.datetime.now()      
+date = date.strftime("%m%d_%H%M")  
+print(date)
+
+filepath = './_ModelCheckPoint/k35/'
+filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
+
+earlyStopping = EarlyStopping(monitor='val_loss', patience=200, mode='min',
+                              restore_best_weights=True,
+                              verbose=1)
+mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1, 
+                      save_best_only=True, 
+                      filepath="".join([filepath, '01_', date, '_', filename])
+                      )
+start_time = time.time()
+hist = model.fit(x, y, epochs=500, batch_size=1,
+                 validation_split=0.2,
+                 callbacks=[earlyStopping],
+                 verbose=1)
+end_time = time.time() - start_time
+
+
+
+#4. 평가, 예측 
+loss = model.evaluate(x, y)
+y_predict = np.array([50,60,70]).reshape(1, 3, 1)
+result = model.predict(y_predict)
+print('loss : ', loss)
+print('[50, 60, 70]의 결과 : ', result)
+
 #  [실습] LSTM 2개 엮은거 테스트해보고
 
+# ==> Param 결과해석
+# recurrent_weights + input_weights + biases
+# = (units*units) + (units*features) + units
+# = units*(units+features) + units
+# = 10(10+1) + 10 = 120
