@@ -84,7 +84,7 @@ print(np.unique(x_train, return_counts=True))
 #2. 모델구성
 model = Sequential()
 model.add(LSTM(100, return_sequences=True, 
-               activation='linear', input_shape=(54,1)))
+               activation='linear', input_shape=(9,1)))
 model.add(LSTM(100, return_sequences=False, 
                activation='relu'))   
 model.add(Dense(100, activation='relu'))

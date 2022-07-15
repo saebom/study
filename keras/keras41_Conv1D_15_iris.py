@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Ro
 from tensorflow.python.keras.models import Sequential, Model, load_model
 from tensorflow.python.keras.layers import Dense, Input, Dropout
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.python.keras.layers import Conv2D, Flatten
+from tensorflow.python.keras.layers import Conv1D, Flatten
 from sklearn.metrics import r2_score, accuracy_score
 import time
 import matplotlib.pyplot as plt
@@ -34,25 +34,25 @@ scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
-x_train = x_train.reshape(105, 2, 2, 1) 
-x_test = x_test.reshape(45, 2, 2, 1)
+x_train = x_train.reshape(105, 2*2, 1) 
+x_test = x_test.reshape(45, 2*2, 1)
 print(x_train.shape)    
 print(np.unique(x_train, return_counts=True))
 
 #2. 모델 구성
 model = Sequential()
-model.add(Conv2D(filters=64, kernel_size=(1, 1), padding='same', 
-                 activation='relu', input_shape=(2, 2, 1)))
+model.add(Conv1D(filters=64, kernel_size=1, padding='same', 
+                 activation='relu', input_shape=(2*2, 1)))
 model.add(Dropout(0.25))     
-model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Conv1D(64, 1, padding='same', activation='relu'))                
 model.add(Dropout(0.25))     
-model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))
+model.add(Conv1D(128, 1, padding='same', activation='relu'))
 model.add(Dropout(0.4))     
-model.add(Conv2D(128, (1, 1), padding='same', activation='relu'))   
+model.add(Conv1D(128, 1, padding='same', activation='relu'))   
 model.add(Dropout(0.25))                 
-model.add(Conv2D(64, (1, 1), padding='same', activation='relu'))                
+model.add(Conv1D(64, 1, padding='same', activation='relu'))                
 model.add(Dropout(0.2))   
-model.add(Conv2D(32, (1, 1), padding='same', activation='relu'))                
+model.add(Conv1D(32, 1, padding='same', activation='relu'))                
 model.add(Dropout(0.2))   
 
 model.add(Flatten())   
@@ -70,7 +70,7 @@ date = datetime.datetime.now()      # 2022-07-07 17:21:42.275191
 date = date.strftime("%m%d_%H%M")   # 0707_1723
 print(date)
 
-filepath = './_ModelCheckPoint/k26/'
+filepath = './_ModelCheckPoint/k41/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
 
 earlyStopping = EarlyStopping(monitor = 'val_loss', patience=50, mode='min', verbose=1, 
@@ -98,14 +98,14 @@ print("걸린시간 : ", end_time)
 
 
 #====================================== DNN ========================================#
-# loss :  
-# acc 스코어 :  
+# loss :  0.07862314581871033
+# accuracy :  0.9555555582046509
 # 걸린시간 :  
 #===================================================================================#
 
 #==================================== Conv1D =======================================#
-# loss :  
-# acc 스코어 :  
-# 걸린시간 : 
+# loss :  0.20489951968193054
+# accuracy :  0.9333333373069763
+# 걸린시간 :  24.318514347076416
 #===================================================================================#
 

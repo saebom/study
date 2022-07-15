@@ -1,6 +1,6 @@
 from keras.datasets import cifar10
 from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense, Dropout
+from tensorflow.python.keras.layers import Dense, Dropout, LSTM
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
@@ -28,18 +28,10 @@ std = np.std(x_train, axis=(0 , 1 , 2 , 3))
 x_train = (x_train-mean)/std
 x_test = (x_test-mean)/std
 
-x_train = x_train.reshape(50000, 3072)
-x_test = x_test.reshape(10000, 3072)
+x_train = x_train.reshape(50000, 32*32, 3)
+x_test = x_test.reshape(10000, 32*32, 3)
 print(x_train.shape)    # 
 print(np.unique(x_train, return_counts=True))
-
-# scaler = MinMaxScaler()
-# scaler = StandardScaler()
-# scaler = MaxAbsScaler()
-scaler = RobustScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
-x_test = scaler.transform(x_test)
 
 # One Hot Encoding
 from tensorflow.python.keras.utils.np_utils import to_categorical
@@ -50,10 +42,8 @@ print(y_train.shape, y_test.shape)
 
 #2. 모델링 
 model = Sequential()
-# model.add(Dense(64, input_shape=(32*32*3,)))
-model.add(Dense(128, input_shape=(3072,)))
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.4))
+model.add(LSTM(128, return_sequences=True,  input_shape=(32*32, 3)))
+model.add(LSTM(128, return_sequences=False, activation='relu'))
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.25))
 model.add(Dense(256, activation='relu'))

@@ -1,6 +1,6 @@
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout
-from tensorflow.keras.datasets import mnist
+from keras.datasets import mnist
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 import numpy as np
 import time

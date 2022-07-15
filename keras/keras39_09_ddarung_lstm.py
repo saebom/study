@@ -25,19 +25,20 @@ train_set = train_set.dropna()  # nan 값 삭제
 x = train_set.drop(['count'], axis=1)
 y = train_set['count']
 
-print(x.shape, y.shape)  # (1328, 9) (1328,)
-x = x.reshape(1328, 9, 1)
-print(x.shape)
-
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.7, random_state=66
 )
 
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)  # (929, 9) (399, 9) (929,) (399,)
+x_train = x_train.reshape(929, 3, 3)
+x_test = x_test.reshape(399, 3, 3)
+print(x.shape)
 
 #2. 모델구성
 model = Sequential()
-model.add(Dense(100, activation = 'linear', input_dim=9))
-model.add(Dense(100, activation='relu'))
+model.add(LSTM(100, return_sequences=True, 
+               activation = 'linear', input_shape=(3, 3)))
+model.add(LSTM(100, return_sequences=False, activation='relu'))
 model.add(Dense(100, activation='relu'))
 model.add(Dense(100, activation='relu'))
 model.add(Dense(1, activation='linear'))
