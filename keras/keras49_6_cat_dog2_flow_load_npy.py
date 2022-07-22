@@ -1,54 +1,49 @@
-# 넘파이에서 불러와서 모델 구성
-# 성능 비교 
-# 증폭해서 npy에 저장
-from keras.datasets import fashion_mnist
-from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
+from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import DirectoryIterator
+from keras.layers import MaxPooling2D, Dropout
+from sympy import Max
+import tensorboard 
 
 #1. 데이터 로드
 
-x_train = np.load('d:/study_data/_save/_npy/keras49_1_train_x.npy')
-y_train = np.load('d:/study_data/_save/_npy/keras49_1_train_y.npy')
-x_test = np.load('d:/study_data/_save/_npy/keras49_1_test_x.npy')
-y_test = np.load('d:/study_data/_save/_npy/keras49_1_test_y.npy')
+x_train = np.load('d:/study_data/_save/_npy/keras49_5_train_x.npy')
+y_train = np.load('d:/study_data/_save/_npy/keras49_5_train_y.npy')
+x_test = np.load('d:/study_data/_save/_npy/keras49_5_test_x.npy')
+y_test = np.load('d:/study_data/_save/_npy/keras49_5_test_y.npy')
 
 
 #2. 모델
-from tensorflow.python.keras.models import Sequential, Model
-from tensorflow.python.keras.layers import *
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense, Conv2D, Flatten
 
 model = Sequential()
-input1 = Input(shape=(28, 28, 1))
-dense1 = Conv2D(64, kernel_size=(4, 4), padding='same')(input1)
-dense2 = MaxPooling2D(2, 2)(dense1)
-dense3 = Dropout(0.2)(dense2)
-dense4 = Conv2D(64, (4, 4), padding='valid', activation='relu')(dense3)
-dense5 = MaxPooling2D(2, 2)(dense4)         
-dense6 = Dropout(0.2)(dense5)
-dense7 = Conv2D(64, (4, 4), padding='same', activation='relu')(dense6)
-dense8 = MaxPooling2D(2, 2)(dense7)         
-dense9 = Dropout(0.2)(dense8)
-dense10 = Flatten()(dense9)    # (N, 63)  (N, 175)
-dense11 = Dense(128, activation='relu')(dense10)
-dense12 = Dropout(0.2)(dense11)
-dense13 = Dense(64, activation='relu')(dense12)
-output1= Dense(10, activation='softmax')(dense13)
-model = Model(inputs=input1, outputs=output1)
-model.summary()
+model.add(Conv2D(64, (2, 2), input_shape=(150, 150, 3), activation='relu'))
+model.add(MaxPooling2D(2, 2))  
+model.add(Dropout(0.2))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(2, 2))  
+model.add(Dropout(0.2))
+model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(2, activation='softmax'))
 
 
 #3. 컴파일, 훈련
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['mse','accuracy'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 import time
 start_time = time.time()
-# hist = model.fit_generator(xy_train, epochs=100, steps_per_epoch=len(xy_train))
-hist = model.fit(x_train, y_train, epochs=100, batch_size=32,
-                 validation_split=0.2)
+hist = model.fit(x_train, y_train, epochs=30, batch_size=32, 
+                 validation_split=0.2, verbose=1)   
 end_time = time.time() - start_time
 
 
 #4. 평가, 예측
+
 accuracy = hist.history['accuracy']
 val_accuracy = hist.history['val_accuracy']
 loss = hist.history['loss']
@@ -61,7 +56,6 @@ print('val_accuracy :', val_accuracy[-1])
 
 print("=====================================================================")
 print("걸린시간 : ", end_time)
-
 
 #그래프로 비교
 import matplotlib.pyplot as plt
@@ -82,14 +76,15 @@ plt.xlabel('epochs')
 plt.legend()   
 plt.show()
 
-
 #=============================== 이전 결과값 ====================================#
-# loss :  0.28520235419273376
-# accuracy :  0.9143000245094299
+# loss : 0.047354985028505325
+# val_loss : 2.5059962272644043
+# accuracy : 0.9800124764442444
+# val_accuracy : 0.5459088087081909
 #================================================================================#
 
 
-#=============================== 증폭 후 결과값 ===================================#
+#============================ save_load 후 결과값 ================================#
 # loss : 0.32446855306625366
 # val_loss : 0.5323543548583984
 # accuracy : 0.8818125128746033

@@ -53,7 +53,7 @@ model.add(Dropout(0.2))
 model.add(Flatten())   
 model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(1, activation='linear'))
+model.add(Dense(1, activation='sigmoid'))
 model.summary()
 
 #3. 훈련

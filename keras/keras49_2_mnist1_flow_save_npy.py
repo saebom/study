@@ -1,6 +1,7 @@
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout
 from keras.datasets import mnist
+from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 import numpy as np
 import time
@@ -11,30 +12,71 @@ from matplotlib import font_manager, rc
 #1. 데이터
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-print(x_train.shape, y_train.shape)     # (60000, 28, 28) (60000,)
-print(x_test.shape, y_test.shape)       # (10000, 28, 28) (10000,)
+train_datagen = ImageDataGenerator(
+    rescale=1./255,
+    horizontal_flip=True, 
+    # vertical_flip=True,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    rotation_range=5,
+    zoom_range=0.1,
+    # shear_range=0.7,
+    fill_mode='nearest'
+)
 
-x_train = x_train.reshape(60000, 28, 28, 1)  # (60000, 28, 28) (60000,)
-x_test = x_test.reshape(10000, 28, 28, 1)   # (10000, 28, 28) (10000,)
-# print(x_train.shape)    # (60000, 28, 28)
-# print(np.unique(x_train, return_counts=True))
+train_datagen2 = ImageDataGenerator(
+    rescale=1./255  
+)
+
+# 증폭 사이즈
+augment_size = 40000
+batch_size = 100000     # save 파일 저장 시 전체 이미지 갯수로 batch_size 맞춰줌
+randidx = np.random.randint(x_train.shape[0], size=augment_size)    # (60000, 40000)
+                                                                    # np.random.randint는 랜덤하게 int를 뽑아냄
+                                                                    # x_train.shape[0] = 60000
+                                                                    # x_train.shape[1] = 28
+                                                                    # x_train.shape[2] = 28                                
+print(x_train.shape) # (60000, 28, 28)
+print(x_train.shape[0]) # (60000)
+print(randidx)          # [31720 43951 44299 ... 22547 15575 47042]
+print(np.min(randidx), np.max(randidx)) # 3 59999
+print(type(randidx))    # <class 'numpy.ndarray'>
+
+x_augmented = x_train[randidx].copy()
+y_augmented = y_train[randidx].copy()
+print(x_augmented.shape)    # (40000, 28, 28)
+print(y_augmented.shape)    # (40000,)
 
 
+x_train = x_train.reshape(60000, 28, 28, 1)
+x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)
+x_augmented = x_augmented.reshape(x_augmented.shape[0], 
+                                  x_augmented.shape[1], 
+                                  x_augmented.shape[2], 1)
 
-# [실습] 
-# acc 0.98 이상
-# convolution 3개 이상 사용
+x_augmented = train_datagen.flow(x_augmented, y_augmented,
+                              batch_size=augment_size,
+                              shuffle=False).next()[0]      # next()[0] => x를 넣겠다는 의미
+                                                            # shuffle=False이므로 label값 변환없이 들어감. 나중에 y값을 그대로 쓸 수 있음
+x_train = np.concatenate((x_train, x_augmented))
+y_train = np.concatenate((y_train, y_augmented))
+print(x_train.shape, y_train.shape)
+
+xy_train = train_datagen2.flow(x_train, y_train,
+                              batch_size=batch_size,
+                              shuffle=False)
+
+xy_test = train_datagen2.flow(x_test, y_test,
+                              batch_size=batch_size,
+                              shuffle=False)
 
 
-# One Hot Encoding
-import pandas as pd
-# df = pd.DataFrame(y)
-y_train = pd.get_dummies(y_train)
-y_test = pd.get_dummies(y_test)
-print(y_train)
-print(y_train.shape)
+np.save('d:/study_data/_save/_npy/keras49_2_train_x.npy', arr=xy_train[0][0])
+np.save('d:/study_data/_save/_npy/keras49_2_train_y.npy', arr=xy_train[0][1])
+np.save('d:/study_data/_save/_npy/keras49_2_test_x.npy', arr=xy_test[0][0])
+np.save('d:/study_data/_save/_npy/keras49_2_test_y.npy', arr=xy_test[0][1])
 
-
+'''
 #2. 모델링 
 model = Sequential()
 model.add(Conv2D(filters=32, kernel_size=(4, 4),    
@@ -99,3 +141,4 @@ y_test = tf.argmax(y_test, axis=1)
 # loss :  0.04272077605128288
 # accuracy :  0.9915000200271606
 #===================================================================================#
+'''

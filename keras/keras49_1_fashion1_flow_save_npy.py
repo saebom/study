@@ -2,7 +2,7 @@
 from keras.datasets import fashion_mnist
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
-from sklearn.model_selection import train_test_split
+
 
 #1. 데이터
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
@@ -17,6 +17,8 @@ train_datagen = ImageDataGenerator(
     zoom_range=0.1,
     # shear_range=0.7,
     fill_mode='nearest'
+    featurewise_center=True,
+    featurewise_std_normalization=True,    
 )
 
 train_datagen2 = ImageDataGenerator(
@@ -25,7 +27,7 @@ train_datagen2 = ImageDataGenerator(
 
 # 증폭 사이즈
 augment_size = 40000
-batch_size = 100000     # 저장 시 전체 이미지 갯수로 ba
+batch_size = 100000     # save 파일 저장 시 전체 이미지 갯수로 batch_size 맞춰줌
 randidx = np.random.randint(x_train.shape[0], size=augment_size)    # (60000, 40000)
                                                                     # np.random.randint는 랜덤하게 int를 뽑아냄
                                                                     # x_train.shape[0] = 60000

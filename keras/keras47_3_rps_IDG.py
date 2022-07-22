@@ -1,5 +1,5 @@
 import numpy as np
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator
 
 #1. 데이터
 train_datagen = ImageDataGenerator(
@@ -50,7 +50,7 @@ print(validation_generator[0][1].shape) # (504, 3)
 
 
 #2. 모델
-from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.models import Sequential, Model
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 # from tensorflow.keras.models import Sequential
 # from keras.layers import *
@@ -67,21 +67,22 @@ model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Dropout(0.5))
 model.add(Flatten())
-model.add(Dense(64, activation='relu'))
+model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
+model.add(Dense(64, activation='relu'))
 model.add(Dense(3, activation='softmax'))
 
 
 #3. 컴파일, 훈련
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-hist = model.fit(train_generator, epochs=30, batch_size=32, 
-                 validation_data=validation_generator,
-                 validation_steps=4,
-                 )   
-# hist = model.fit_generator(train_generator, epochs = 20, steps_per_epoch = 4, 
-#                     validation_data = validation_generator,
-#                     validation_steps = 4,) 
+# hist = model.fit(train_generator, epochs=10, steps_per_epoch = 1, 
+#                  validation_data=validation_generator,
+#                  validation_steps=4,
+#                  )   
+hist = model.fit_generator(train_generator, epochs = 20, steps_per_epoch = 1, 
+                    validation_data = validation_generator,
+                    validation_steps = 1,) 
 
 accuracy = hist.history['accuracy']
 val_accuracy = hist.history['val_accuracy']

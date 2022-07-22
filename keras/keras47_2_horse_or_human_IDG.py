@@ -1,6 +1,5 @@
 import numpy as np
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.preprocessing.image import Direct
+from keras.preprocessing.image import ImageDataGenerator
 
 
 #1. 데이터
@@ -28,7 +27,7 @@ train_generator = train_datagen.flow_from_directory(
     'd:/study_data/_data/image/horse_or_human/',
     target_size=(150, 150), 
     batch_size=600,          
-    class_mode='categorical',   
+    class_mode='binary',   
     color_mode='rgb', 
     shuffle=True,
     subset='training' # set as training data
@@ -39,7 +38,7 @@ validation_generator = train_datagen.flow_from_directory(
     'd:/study_data/_data/image/horse_or_human/', 
     target_size=(150, 150), 
     batch_size=600,          
-    class_mode='categorical',   
+    class_mode='binary',   
     color_mode='rgb', 
     subset='validation' # set as validation data
     # Found 205 images belonging to 2 classes.   
@@ -69,20 +68,22 @@ model.add(Dropout(0.5))
 model.add(Flatten())
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(2, activation='softmax'))
+model.add(Dense(1, activation='sigmoid'))
 
 
 #3. 컴파일, 훈련
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-hist = model.fit(train_generator, epochs=30, batch_size=32, 
-                 validation_data=validation_generator,
-                 validation_steps=4,
-                 )   
-# hist = model.fit_generator(train_generator, epochs = 20, steps_per_epoch = 1, 
-#                     validation_data = validation_generator,
-#                     validation_steps = 4,) 
+# hist = model.fit(train_generator, epochs=30, batch_size=32, 
+#                  validation_data=validation_generator,
+#                  validation_steps=4,
+#                  )   
+hist = model.fit_generator(train_generator, epochs = 20, steps_per_epoch = 1, 
+                    validation_data = validation_generator,
+                    validation_steps = 4,
+                    ) 
 
+#. 평가, 예측
 accuracy = hist.history['accuracy']
 val_accuracy = hist.history['val_accuracy']
 loss = hist.history['loss']
