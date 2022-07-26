@@ -15,14 +15,14 @@ driver = webdriver.Chrome(options=options,
 
 
 #img 다운_폴더지정 또는 생성
-img_folder_path = 'D:/study_data/_project1/img/2019SS/balenciaga/'   #이미지 저장 폴더
+img_folder_path = 'D:/study_data/_project1/img/2019SS/milan/prada/'   #이미지 저장 폴더
 
 if not os.path.isdir(img_folder_path):
     os.mkdir(img_folder_path)
     
     
 #vogue.com 접속
-site_path = "https://www.vogue.com/fashion-shows/spring-2019-ready-to-wear/balenciaga#gallery-collection"
+site_path = "https://www.vogue.com/fashion-shows/spring-2019-ready-to-wear/prada#gallery-collection"
 driver.get(site_path)
 
 
