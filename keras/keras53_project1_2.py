@@ -15,15 +15,16 @@ driver = webdriver.Chrome(options=options,
 
 
 #img 다운_폴더지정 또는 생성
-img_folder_path = 'D:/study_data/_project1/img/2019SS/milan/prada/'   #이미지 저장 폴더
+img_folder_path = 'D:/study_data/_project1/img/2022SS/milan/philosophy/'   #이미지 저장 폴더
 
 if not os.path.isdir(img_folder_path):
     os.mkdir(img_folder_path)
     
     
 #vogue.com 접속
-site_path = "https://www.vogue.com/fashion-shows/spring-2019-ready-to-wear/prada#gallery-collection"
+site_path = "https://www.vogue.com/fashion-shows/spring-2022-ready-to-wear/philosophy#gallery-collection"
 driver.get(site_path)
+
 
 
 #<road more> 버튼 해제하여 road함
@@ -43,6 +44,7 @@ except TimeoutException:
 else:
     for button in buttons:
         button.click()
+     
         
 #이미지 elements path 잡아 줌 
 imgs = driver.find_elements_by_xpath('//*[@id="gallery-collection"]/div/div[1]/div/div/a/figure/span/picture/img')
