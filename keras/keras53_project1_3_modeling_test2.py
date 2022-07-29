@@ -4,14 +4,9 @@ from keras.preprocessing.image import DirectoryIterator
 from keras.layers import MaxPooling2D, Dropout
 import pandas as pd
 from PIL import image
-
-path = 'D:\study_data\_project1\img'
-data_csv = pd.read_csv(path + '')
+  
     
-    
-    
-    
-    #1. 데이터
+#1. 데이터
 train_datagen = ImageDataGenerator(
     rescale = 1./255,       # 스케일 조정
     horizontal_flip= True,  # 수평으로 반전

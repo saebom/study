@@ -2,13 +2,12 @@ import os
 
 #파일 이름 변경하기
 
-file_path = 'D:\study_data\_project1\img/fashion_img/00_london_total\이미지정제'
+file_path = 'D:\study_data\_project1\img/fashion_img/01_paris_total\정제된 데이터'
 file_names = os.listdir(file_path)
 file_names
 
 
-
-i = 20
+i = 1958
 for name in file_names:
     src = os.path.join(file_path, name)
     dst = str(i) + '.jpg'
@@ -20,7 +19,7 @@ for name in file_names:
 # 파일 사이즈 줄이기
 # import glob
 # from PIL import Image
-# files = glob.glob('D:\study_data\_project1\img/00_paris_total/*')    
+# files = glob.glob('D:/study_data/_project1/img/fashion_img/00_paris_total/*')    
 
 # for f in files:
 #     title, ext = os.path.splitext(f)
@@ -28,4 +27,6 @@ for name in file_names:
 #         img = Image.open(f)
 #         img_resize = img.resize((int(img.width/2), int(img.height/2)))
 #         img_resize.save(title + ext)
-        
+
+
+   
