@@ -15,8 +15,7 @@ driver = webdriver.Chrome(options=options,
 
 
 #img 다운_폴더지정 또는 생성
-img_folder_path = 'D:/study_data/_project1/img/2019FW/paris/bottega_veneta/'   #이미지 저장 폴더
-
+img_folder_path = 'D:/study_data/_project1/img/2019FW/milan/bottega_veneta/'   #이미지 저장 폴더
 if not os.path.isdir(img_folder_path):
     os.mkdir(img_folder_path)
     
@@ -47,7 +46,7 @@ else:
      
         
 #이미지 elements path 잡아 줌 
-imgs = driver.find_elements_by_xpath('//*[@id="gallery-collection"]/div/div[1]/div/div/a/figure/span/picture/img')
+imgs = driver.find_elements(By.XPATH, '//*[@id="gallery-collection"]/div/div[1]/div/div/a/figure/span/picture/img')
 result = []
 img_path = '/html/body/div[1]/div/div/main/div[5]/div[1]/div/section[1]/div/div[1]/div/div[2]/a/figure/span/picture/img'
 
