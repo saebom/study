@@ -3,10 +3,10 @@ from keras.preprocessing.image import ImageDataGenerator
 
 
 #1. 데이터 로드
-x_train = np.load('D:/study_data/_save/_npy/project1_newyork_x.npy')
-y_train = np.load('D:/study_data/_save/_npy/project1_newyork_y.npy')
-x_test = np.load('D:/study_data/_save/_npy/project1_newyork_xval.npy')
-y_test = np.load('D:/study_data/_save/_npy/project1_newyork_yval.npy')
+paris_train = np.load('d:/study_data/_save/_npy/project1_train_paris.npy')
+milan_train = np.load('d:/study_data/_save/_npy/project1_train_milan.npy')
+paris_validation = np.load('d:/study_data/_save/_npy/project1-validation_paris.npy')
+milan_validation = np.load('d:/study_data/_save/_npy/project1-validation_milan.npy')
 
 
 #2. 모델
@@ -27,15 +27,15 @@ model.add(Dropout(0.5))
 model.add(Flatten())
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(75, activation='softmax'))
+model.add(Dense(150, activation='softmax'))
 
 
 #3. 컴파일, 훈련
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 import time
 start_time = time.time()
-hist = model.fit(x_train, y_train, epochs=30, batch_size=32, 
+hist = model.fit(x, y, epochs=30, batch_size=32, 
                  validation_split=0.2,
                  validation_steps=4,
                  )    
@@ -75,19 +75,10 @@ plt.legend()
 plt.show()
 
 
-#=============================== 이전 결과값 ====================================#
+#================================== 결과값 ======================================#
 # loss : 0.6876140832901001
 # val_loss : 1.0849494934082031
 # accuracy : 0.5495495200157166
 # val_accuracy : 0.5121951103210449
 #================================================================================#
 
-
-#=============================== 증폭 후 결과값 ===================================#
-# loss : 0.6425307989120483
-# val_loss : 0.7089158296585083
-# accuracy : 0.612500011920929
-# val_accuracy : 0.4765625
-# =====================================================================
-# 걸린시간 :  14.333789110183716
-#================================================================================#

@@ -36,12 +36,6 @@ labels = [np_utils.to_categorical(label, num_classes=label_length, dtype='float3
           .sum(axis=0)[1:] for label in label_seq]
 print(labels)   # 106개
 
-# Customized KoNLPy로 단어 정제 및 추가
-# from ckonlpy.tag import Twitter
-# twitter = Twitter()
-# twitter.morphs(labels)
-# print(labels)
-
 y = np.array(labels[0])
 for i in range(1, 2039):
     y = np.vstack((y, labels[i]))
