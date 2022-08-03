@@ -16,7 +16,6 @@ from PIL import Image
 
 data_path = 'D:/study_data/_project1/labeling/'
 train = pd.read_csv(data_path + 'london_train.csv', encoding='cp949')
-# print(train.head)
 train_img = 'D:/study_data/_project1/img/fashion_img/london_train/'
 
 
@@ -26,29 +25,27 @@ img_result = []
 for file in os.listdir(train_img): 
     img_file = file
     img_result.append(img_file) 
-# print(len(img_result))  # 2039
 
 
 # 라벨링 tokenizer    
 labels = train['labelId']
-# print(labels.head)
 token = Tokenizer(filters=',')
 token.fit_on_texts(labels)
 label_seq = token.texts_to_sequences(labels)
 label_length = len(token.word_index) + 1
 print(token.word_index)
-labels = [np_utils.to_categorical(label, num_classes=label_length, dtype='float32').sum(axis=0)[1:] for label in label_seq]
-print(labels)   # 75개
+labels = [np_utils.to_categorical(label, num_classes=label_length, 
+                                  dtype='float32').sum(axis=0)[1:] for label in label_seq]
+print(labels)   
 
 y = np.array(labels[0])
 for i in range(1, 1539):
     y = np.vstack((y, labels[i]))
 y = np.array(y)
-print(y.shape) # (1539, 75)
+print(y.shape) 
 
 
 # Image DataGenerator
-
 import tqdm
 from tensorflow.keras.utils import load_img, img_to_array
 train_image = []

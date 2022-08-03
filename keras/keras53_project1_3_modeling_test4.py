@@ -14,9 +14,9 @@ from PIL import Image
 
 
 data_path = 'D:/study_data/_project1/labeling/'
-train = pd.read_csv(data_path + 'paris_train.csv', encoding='cp949')
+train = pd.read_csv(data_path + 'total_train.csv', encoding='cp949')
 # print(train.head)
-train_img = 'D:/study_data/_project1/img/fashion_img/paris_train/'
+train_img = 'D:/study_data/_project1/img/fashion_img/total_img/'
 val_img = 'D:/study_data/_project1/img/fashion_img/paris_val/'
 
 
@@ -116,10 +116,10 @@ print(x_val.shape) # (776, 50, 60, 3), (558, 50, 60, 3), (429, 50, 60, 3), (341,
 # print(x[0][0])    
 # print(x[0][1])    
     
-np.save('d:/study_data/_save/_npy/project1_newyork_x.npy', arr = x)
-np.save('d:/study_data/_save/_npy/project1_newyork_y.npy', arr=y)
-np.save('d:/study_data/_save/_npy/project1_newyork_xval.npy', arr = x_val)
-np.save('d:/study_data/_save/_npy/project1_newyork_yval.npy', arr= y_val)
+# np.save('d:/study_data/_save/_npy/project1_newyork_x.npy', arr = x)
+# np.save('d:/study_data/_save/_npy/project1_newyork_y.npy', arr=y)
+# np.save('d:/study_data/_save/_npy/project1_newyork_xval.npy', arr = x_val)
+# np.save('d:/study_data/_save/_npy/project1_newyork_yval.npy', arr= y_val)
 
 # x = np.load('D:/study_data/_save/_npy/project1_newyork_x.npy')
 # y = np.load('D:/study_data/_save/_npy/project1_newyork_y.npy')
@@ -128,7 +128,14 @@ np.save('d:/study_data/_save/_npy/project1_newyork_yval.npy', arr= y_val)
 
 
 #2. 모델
+from keras.applications import ResNet50, ResNet101, ResNet50V2, ResNet152V2
 
+model = ResNet101(include_top=True, weights=None, input_shape=(50, 60, 3), 
+                 pooling=max, classes=75)
+model = ResNet50(include_top=True, weights=None, input_shape=(50, 60, 3), 
+                 pooling=max, classes=75)
+model = ResNet152V2(include_top=True, weights=None, input_shape=(50, 60, 3), 
+                 pooling=max, classes=75)
 model = ResNet50(include_top=True, weights=None, input_shape=(50, 60, 3), 
                  pooling=max, classes=75)
 

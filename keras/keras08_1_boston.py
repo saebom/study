@@ -24,7 +24,7 @@ print(datasets.DESCR)
 #2) R2를 0.8 이상
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size=0.7, shuffle=True, random_state=66
+    x, y, train_size=0.7, shuffle=True, random_state=72
 )
 
 #2. 모델 구성
@@ -55,17 +55,8 @@ y_predict = model.predict(x_test)
 r2 = r2_score(y_test, y_predict)
 print('r2 스코어: ', r2)  
 
-# loss :  17.114551544189453   
-# r2 스코어:  0.792844911926203
-# model.add(Dense(7))
-# model.add(Dense(10))
-# model.add(Dense(30))
-# model.add(Dense(50))
-# model.add(Dense(100))
-# model.add(Dense(50))
-# model.add(Dense(30))
-# model.add(Dense(10))
-# model.add(Dense(7))
-# model.add(Dense(1))
-# model.compile(loss='mse', optimizer='adam')   
-# model.fit(x_train, y_train, epochs=500, batch_size=1)
+
+#===================================== 결  과 ==========================================#
+# 결과 acc :  0.6286952104589564
+# r2 스코어:  0.6286952104589564
+#=======================================================================================#
