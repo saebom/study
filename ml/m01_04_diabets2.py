@@ -31,10 +31,10 @@ scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
-x_train = x_train.reshape(309, 2*5, 1) 
-x_test = x_test.reshape(133, 2*5, 1)
-print(x_train.shape)    
-print(np.unique(x_train, return_counts=True))
+# x_train = x_train.reshape(309, 2*5, 1) 
+# x_test = x_test.reshape(133, 2*5, 1)
+# print(x_train.shape)    
+# print(np.unique(x_train, return_counts=True))
 
 
 #2. 모델 구성
@@ -90,11 +90,13 @@ model.fit(x_train, y_train)
 
 
 #4. 평가, 예측
-loss = model.evaluate(x_test, y_test)
-print('loss : ', loss)
+# loss = model.evaluate(x_test, y_test)
+# print('loss : ', loss)
 
-result = model.score(x_test, y_test)
-print('결과 r2 : ', result)
+# result = model.score(x_test, y_test)
+# print('결과 r2 : ', result)
+results = model.score(x_test, y_test)
+print('결과 r2 : ', results)
 
 # y_predict = model.predict(x_test)  
 # r2 = r2_score(y_test, y_predict)
@@ -104,14 +106,12 @@ print('결과 r2 : ', result)
 # print("걸린시간 : ", end_time)
 
 
-#====================================== DNN ========================================#
-# loss :  [3216.153076171875, 3216.153076171875]
-# r2 스코어:  0.4837942008323731
-# 걸린시간 :  
-#===================================================================================#
 
-#==================================== Conv1D =======================================#
+
+#================================ SVM 적용 결과 ===================================#
+# 결과 r2 :  0.15523905134370397
+# =================================================================================
 # loss :  [2620.469970703125, 2620.469970703125]
 # r2 스코어:  0.5625893628075687
 # 걸린시간 :  10.755416870117188
-#===================================================================================#
+#==================================================================================#

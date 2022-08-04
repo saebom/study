@@ -8,20 +8,23 @@ from keras.utils import np_utils
 from keras.preprocessing.image import ImageDataGenerator
 from keras.applications import ResNet50, ResNet101, ResNet50V2, ResNet152V2
 from sklearn.model_selection import PredefinedSplit, train_test_split
+from tensorflow.python.keras.models import Sequential, load_model
+from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation
 from sympy import continued_fraction_reduce
 import tensorflow as tf
 from PIL import Image
 
 
 #1. 데이터 로드
-
 data_path = 'D:/study_data/_project1/labeling/'
 train = pd.read_csv(data_path + 'total_train.csv', encoding='cp949')
-#train = pd.read_csv(data_path + 'london_train.csv', encoding='cp949')
+# train = pd.read_csv(data_path + 'london_train.csv', encoding='cp949')
 train_img = 'D:/study_data/_project1/img/fashion_img/total_img/'
-#train_img = 'D:/study_data/_project1/img/fashion_img/london_train/'
-test_img = 'D:/study_data/_project1/img/fashion_img/test_img/'
+# train_img = 'D:/study_data/_project1/img/fashion_img/london_train/'
 columns = ['ImageId', 'years', 'season', 'region', 'designer', 'labelId']
+test1 = np.load('D:/study_data/_save/_npy/project1_test1.npy')
+test2 = np.load('D:/study_data/_save/_npy/project1_test2.npy')
+
 
 for col in columns:
     print(col)
@@ -41,14 +44,14 @@ img_result = []
 for file in os.listdir(train_img): 
     img_file = file
     img_result.append(img_file) 
-print(len(img_result))  # 8894
+print(len(img_result))  # 161
 
 
 # 라벨 데이터 가져오기
 labels = []
    
-used_columns = ['region', 'labelId']
-# used_columns = ['labelId']
+# used_columns = ['region', 'labelId']
+used_columns = ['labelId']
 
 for index, row in train.iterrows():
     if row['ImageId'] in img_result:
@@ -82,23 +85,24 @@ mlb = MultiLabelBinarizer()
 labels = mlb.fit_transform(labels)
 
 print('===================================')
-print(mlb.classes_)
-print(len(mlb.classes_)) # 165
-print(labels[0])
+# print(mlb.classes_)
+# print(len(mlb.classes_)) # 165
+# print(labels[0])
     
 x_train, x_test, y_train, y_test = train_test_split(data, labels, train_size=0.8, shuffle=False)
 
+# np.save('d:/study_data/_save/_npy/project1_total_x.npy', arr = x_train)
+# np.save('d:/study_data/_save/_npy/project1_total_y.npy', arr=y_train)
+# np.save('d:/study_data/_save/_npy/project1_total_xval.npy', arr = x_test)
+# np.save('d:/study_data/_save/_npy/project1_total_yval.npy', arr= y_test)
+
+# x_train = np.load('d:/study_data/_save/_npy/project1_total_x.npy')
+# y_train = np.load('d:/study_data/_save/_npy/project1_total_y.npy')
+# x_test = np.load('d:/study_data/_save/_npy/project1_total_xval.npy')
+# y_test = np.load('d:/study_data/_save/_npy/project1_total_yval.npy')
+
+
 #2. 모델
-# model = ResNet101(include_top=True, weights=None, input_shape=(50, 60, 3), 
-                #  pooling=max, classes=150)
-# model = ResNet50(include_top=True, weights=None, input_shape=(50, 60, 3), 
-#                  pooling=max, classes=150)
-# model = ResNet152V2(include_top=True, weights=None, input_shape=(50, 60, 3), 
-#                  pooling=max, classes=157)
-
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation
-
 model = Sequential()
 model.add(Conv2D(64, kernel_size=(3,3), 
                  input_shape=(50, 60, 3), activation='relu', padding='same'))
@@ -125,11 +129,34 @@ model.summary()
 #3. 컴파일, 훈련
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy', 'mse'])
 
+from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
+
+filepath = './_ModelCheckPoint/k53/'
+filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
+import datetime
+date = datetime.datetime.now()     
+date = date.strftime("%m%d_%H%M")   
+print(date)
+
+earlyStopping = EarlyStopping(monitor = 'val_loss', patience=100, mode='min',
+                              restore_best_weights=True,
+                              verbose=1)
+mcp = ModelCheckpoint(monitor='val_loss', mode='auto', verbose=1, 
+                      save_best_only=True, 
+                      filepath="".join([filepath, '01_', date, '_', filename])
+                      )
+
 import time
 start_time = time.time()
-hist = hist = model.fit(x_train, y_train, epochs=30, batch_size=128,
-                        validation_split=0.2)     
+hist = hist = model.fit(x_train, y_train, epochs=50, batch_size=128,
+                        validation_split=0.2,
+                        verbose=1)     
 end_time = time.time() - start_time
+
+
+# #3.#load_model
+# model = load_model('./_ModelCheckPoint/01_0803_1747_0001-6.5613.hdf5')
+
 
 #. 평가, 예측
 accuracy = hist.history['accuracy']
@@ -146,49 +173,14 @@ print("=====================================================================")
 print("걸린시간 : ", end_time)
 
 
-predict = model.predict(x_test)
-pred_binarized = []
 
-for pred in predict:
-    vals = []
-    for val in pred:
-        if val > 0.5:
-            vals.append(1)
-        else:
-            vals.append(0)
-    pred_binarized.append(vals)
-    
-pred_binarized = np.array(pred_binarized)
-print(len(pred_binarized))
+# 테스트 데이터 로드
 
-true_test_labels = mlb.inverse_transform(y_test)
-pred_test_labels = mlb.inverse_transform(pred_binarized)
+predict = model.predict(test1)
+predict[0]
+np.argmax(predict[0])
 
-correct = 0
-wrong = 0
 
-for i in range(len(y_test)):
-    true_labels = list(true_test_labels[i])
-    pred_labels = list(pred_test_labels[i])
-    
-    label1 = true_labels[0]
-    label2 = true_labels[1]
-    
-    if label1 in pred_labels:
-        correct +=1
-    else:
-        wrong +=1
-    if label2 in pred_labels:
-        correct += 1
-    else:
-        wrong += 1
-
-print('correct : ', correct)
-print('missing/wrong : ', wrong)
-print('accuracy : ', correct/(correct+wrong))
-
-for i in range(20):
-    print('True labels: ',true_test_labels[i],' Predicted labels: ',pred_test_labels[i])
 
 # ======================================= loss 및 accuracy =========================================
 # loss : 1.2357330322265625

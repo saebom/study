@@ -105,12 +105,12 @@ model.add(Activation('sigmoid'))
 out = len(mlb.classes_)
 
 model.add(Dense(out))
-model.add(Activation('sigmoid'))
+model.add(Activation('softmax'))
 model.summary()
 
 
 #3. 컴파일, 훈련
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy', 'mse'])
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy', 'mse'])
 
 import time
 start_time = time.time()

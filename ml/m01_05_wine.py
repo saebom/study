@@ -18,14 +18,14 @@ datasets = load_wine()
 x, y = datasets.data, datasets.target
 
 print(x.shape)  # (178, 13)
-x = x.reshape(178, 13, 1)
-print(x.shape)  # (178, 13, 1)
+# x = x.reshape(178, 13, 1)
+# print(x.shape)  # (178, 13, 1)
 
 # One Hot Encoding 
-from tensorflow.python.keras.utils.np_utils import to_categorical
-y = to_categorical(y)
-print(y)
-print(y.shape)  # (178, 3)
+# from tensorflow.python.keras.utils.np_utils import to_categorical
+# y = to_categorical(y)
+# print(y)
+# print(y.shape)  # (178, 3)
 
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.7, random_state=66
@@ -80,13 +80,9 @@ model.fit(x_train, y_train)
 result = model.score(x_test, y_test)
 print('결과 acc : ', result)
 
-
-#=================================== DNN 모델 ====================================#
+#================================ SVM 적용 결과 ===================================#
+# 결과 acc :  0.9259259259259259
+# =================================================================================
 # loss :  0.0272836834192276
 # accuracy :  0.9814814925193787
-#=================================================================================#
-
-#=================================== RNN 모델 ====================================#
-# loss :  0.5308064818382263
-# accuracy :  0.7407407164573669
-#=================================================================================#
+#==================================================================================#

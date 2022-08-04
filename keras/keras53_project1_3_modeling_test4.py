@@ -14,18 +14,17 @@ from PIL import Image
 
 
 data_path = 'D:/study_data/_project1/labeling/'
-train = pd.read_csv(data_path + 'total_train.csv', encoding='cp949')
+train = pd.read_csv(data_path + 'paris_train.csv', encoding='cp949')
 # print(train.head)
-train_img = 'D:/study_data/_project1/img/fashion_img/total_img/'
-val_img = 'D:/study_data/_project1/img/fashion_img/paris_val/'
-
+train_img = 'D:/study_data/_project1/img/fashion_img/paris_train/'
+test_img = 'D:/study_data/_project1/img/fashion_img/test_img/'
 
 # 이미지 데이터 가져오기
-img_result = []
+test_images = []
 
-for file in os.listdir(train_img): 
+for file in os.listdir(test_img): 
     img_file = file
-    img_result.append(img_file) 
+    test_images.append(img_file) 
 # print(len(img_result))  # 2039
 
 
@@ -103,23 +102,19 @@ for i in tqdm.tqdm(range(train.shape[0])):
 x = np.array(train_image)
 print(x.shape) # (3227, 50, 60, 3), (2298, 50, 60, 3), (1830, 50, 60, 3), (1539, 50, 60, 3)
 
-#validation image
-val_image = []
-for i in tqdm.tqdm(range(validation.shape[0])):
-    img = load_img(val_img + str(i+1) + '.jpg', target_size=(50, 60, 3))
-    # img = load_img(val_img + str(i+1) + '.jpg', target_size=(224, 224, 3))
-    img = img_to_array(img)
-    img = img/255
-    val_image.append(img)
-x_val = np.array(val_image)
-print(x_val.shape) # (776, 50, 60, 3), (558, 50, 60, 3), (429, 50, 60, 3), (341, 50, 60, 3)
-# print(x[0][0])    
-# print(x[0][1])    
+#test image
+test_data = train_datagen2.flow_from_directory(
+    'D:/study_data/_project1/img/fashion_img/test_img',
+    target_size=(50, 60)
+)
+# test_data = np.array(test_images, dtype='float32') / 255.0
     
 # np.save('d:/study_data/_save/_npy/project1_newyork_x.npy', arr = x)
 # np.save('d:/study_data/_save/_npy/project1_newyork_y.npy', arr=y)
 # np.save('d:/study_data/_save/_npy/project1_newyork_xval.npy', arr = x_val)
 # np.save('d:/study_data/_save/_npy/project1_newyork_yval.npy', arr= y_val)
+np.save('D:/study_data/_save/_npy/project1_test1.npy', arr = test_data[0][0])
+np.save('D:/study_data/_save/_npy/project1_test2.npy', arr = test_data[0][1])
 
 # x = np.load('D:/study_data/_save/_npy/project1_newyork_x.npy')
 # y = np.load('D:/study_data/_save/_npy/project1_newyork_y.npy')
@@ -128,6 +123,7 @@ print(x_val.shape) # (776, 50, 60, 3), (558, 50, 60, 3), (429, 50, 60, 3), (341,
 
 
 #2. 모델
+'''
 from keras.applications import ResNet50, ResNet101, ResNet50V2, ResNet152V2
 
 model = ResNet101(include_top=True, weights=None, input_shape=(50, 60, 3), 
@@ -140,7 +136,7 @@ model = ResNet50(include_top=True, weights=None, input_shape=(50, 60, 3),
                  pooling=max, classes=75)
 
 
-'''
+
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 
@@ -160,7 +156,7 @@ model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
 
-'''
+
 model.summary()
 
 
@@ -186,7 +182,7 @@ print('val_accuracy :', val_accuracy[-1])
 
 print("=====================================================================")
 print("걸린시간 : ", end_time)
-
+'''
 
 # ======================================= loss 및 accuracy =========================================
 # loss : 0.6876140832901001
