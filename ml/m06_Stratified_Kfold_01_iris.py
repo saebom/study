@@ -4,7 +4,7 @@ from sklearn import datasets
 from sklearn.datasets import load_iris
 from sklearn.metrics import r2_score, accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import KFold, cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold
 
 import tensorflow as tf
 tf.random.set_seed(66)  # weight에 난수값 
@@ -26,7 +26,8 @@ print('y의 라벨값 : ', np.unique(y))    # y의 라벨값 :  [0 1 2]
 # )
 n_splits=5
 # kfold = KFold(n_splits=n_splits, shuffle=True, random_state=66)
-kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=66)   #y라벨이 일정한 비율만큼 잘리게 됨
+kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=66)   #StratifiedKFold는 y라벨이 일정한 비율만큼 잘리게 됨
+                                                                            #그러나 KFold 자체에 분류하여 적용되고 있음
 
 
 #2. 모델 구성

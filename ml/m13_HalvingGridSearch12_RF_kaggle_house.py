@@ -1,21 +1,45 @@
 import numpy as np
 import pandas as pd
 from sklearn import datasets
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, KFold
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import HalvingGridSearchCV, HalvingRandomSearchCV
+from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
+import time
+import matplotlib.pyplot as plt
+from matplotlib import font_manager, rc
 from scipy.stats import norm, skew
-
 
 #1. 데이터
 path = './_data/house/'
 train_set = pd.read_csv(path + 'train.csv', index_col=0)
+# print(train_set)
+# print(train_set.columns)                         
+# print('train_set의 info :: ', train_set.info())
+# print(train_set.describe())
+# print(train_set.isnull().sum())
+
 test_set = pd.read_csv(path + 'test.csv', index_col=0)
+# print(test_set) 
+# print(test_set.columns) 
+# print('test_set의 info :: ', test_set.info())
+# print(test_set.describe())
+# print(test_set.isnull().sum())  # LotFrontage 227, SaleType 1
+
 submission = pd.read_csv(path + 'house_submission.csv')
-# print('train.shape, test.shape, submit.shape', 
-#       train_set.shape, test_set.shape, submission.shape)    # (1460, 81) (1459, 80) (1459, 2)
+print('train.shape, test.shape, submit.shape', 
+      train_set.shape, test_set.shape, submission.shape)    # (1460, 81) (1459, 80) (1459, 2)
 
 
 ###### 데이터 전처리 ######
-# print('after drop Id ::', train_set.shape, test_set.shape)  # (1460, 80) (1459, 79)
+print('after drop Id ::', train_set.shape, test_set.shape)  # (1460, 80) (1459, 79)
+
+# 'SalePrice'와  'GrLivArea'의 관계
+# fig, ax = plt.subplots()
+# ax.scatter(x = train_set['GrLivArea'], y = train_set['SalePrice'])
+# plt.ylabel('SalePrice', fontsize = 13)
+# plt.ylabel('GrLivArea', fontsize = 13)
+# plt.show()
 
 # 'SalePrice'와  'GrLivArea'의 이상치 제거
 train_set = train_set.drop(train_set[(train_set['GrLivArea']>4000) 
@@ -210,30 +234,98 @@ y = label   # train_set['SalePrice']
 
 print(x.shape, y.shape)
 # train 데이터와 test 데이터의 분리
-# x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, random_state =7)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, random_state =7)
 # train 데이터와 test 데이터의 분리 결과 확인
-# print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1166, 80) (292, 80) (1166,) (292,)
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1166, 80) (292, 80) (1166,) (292,)
 
-n_splits = 7
-kfold = KFold(n_splits=n_splits, shuffle=True, random_state=7)
+n_splits= 5
+kfold = KFold(n_splits=n_splits, shuffle=True, random_state=1004)
 
-#2. 모델구성
+'''모델 : RandomForestClassifier의 파라미터 ========================================================
+
+parameters = [
+    {'n_estimators' : [100, 200]},  #n_estimators 는 epoch
+    {'max_depth' : [6, 8, 10, 12]},
+    {'min_samples_leaf' : [3, 5, 7, 10]},
+    {'min_samples_split' : [2, 3, 5, 10]}, 
+    {'n_jobs' : [-1, 2, 4]}
+]
+
+# 파라미터 조합으로 2개 이상 엮을 것
+# ================================================================================================'''
+parameters = [
+    {'n_estimators' : [100, 200], 'max_depth':[6, 8, 10, 12], 'n_jobs' : [-1, 2, 4]},  #n_estimators 는 epoch
+    {'max_depth' : [6, 8, 10, 12], 'min_samples_split' : [2, 3, 5, 10]},
+    {'n_estimators' : [100, 200], 'min_samples_leaf' : [3, 5, 7, 10]},
+    {'min_samples_split' : [2, 3, 5, 10], 'n_jobs' : [-1, 2, 4]}, 
+    {'n_estimators' : [100, 200],'n_jobs' : [-1, 2, 4]}
+]
+
+
+#2. 모델 구성
+from sklearn.svm import LinearSVR, SVR
+from sklearn.linear_model import Perceptron, LogisticRegression     #LogisticRegression은 분류모델
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 
-model = RandomForestRegressor()
+# model = RandomForestRegressor(max_depth=100, n_estimators=100, n_jobs=2) 
+# model = GridSearchCV(RandomForestRegressor(), parameters, cv=kfold, verbose=1,
+#                      refit=True, n_jobs=-1)
+# model = RandomizedSearchCV(RandomForestRegressor(), parameters, cv=kfold, verbose=1,
+#                      refit=True, n_jobs=-1)
+model = HalvingGridSearchCV(RandomForestRegressor(), parameters, cv=kfold, verbose=1,
+                     refit=True, n_jobs=-1)
 
 
-#3.4. 컴파일, 훈련, 평가, 예측
-scores = cross_val_score(model, x, y, cv=kfold)
-print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
+#3. 컴파일, 훈련
+import time
+start = time.time()
+model.fit(x_train, y_train) 
+print("최적의 매개변수 : ", model.best_estimator_)
+print("최적의 파라미터 : ", model.best_params_)
+print("best_score_ : ", model.best_score_)
+print("model.score : ", model.score(x_test, y_test))
+end_time = time.time() 
 
 
-#================================= StraitifiedKFold 적용 결과 ================================================#
-# ACC :  [0.89293753 0.86580279 0.90061535 0.86768612 0.89856851 0.88054473
-#  0.90536165]
-#  cross_val_score :  0.8874
-#==================================== KFold 적용 결과 ========================================================#
-# ACC :  [0.89418261 0.86460955 0.89754294 0.86672941 0.90049894 0.86738502
-#  0.91027553]
-#  cross_val_score :  0.8859
-#=============================================================================================================#
+
+#4. 평가, 예측
+y_predict = model.predict(x_test)
+print('r2_score : ', r2_score(y_test, y_predict))
+
+y_pred_best = model.best_estimator_.predict(x_test)
+print('최적의 튠 ACC : ', r2_score(y_test, y_pred_best))
+print('걸린시간 : ', round(end_time-start, 2), "초")
+
+
+#============================= HalvingGridSearchCV 결과 ===============================#
+# Fitting 5 folds for each of 3 candidates, totalling 15 fits
+# 최적의 매개변수 :  RandomForestRegressor(max_depth=12, n_estimators=200, n_jobs=4)
+# 최적의 파라미터 :  {'max_depth': 12, 'n_estimators': 200, 'n_jobs': 4}
+# best_score_ :  0.8786849298599548
+# model.score :  0.8832058455304219
+# r2_score :  0.8832058455304219
+# 최적의 튠 ACC :  0.8832058455304219
+# 걸린시간 :  23.46 초
+#============================== RandomizedSearchCV 결과 ===============================#
+# Fitting 5 folds for each of 10 candidates, totalling 50 fits
+# 최적의 매개변수 :  RandomForestRegressor(max_depth=12, n_estimators=200, n_jobs=-1)
+# 최적의 파라미터 :  {'n_jobs': -1, 'n_estimators': 200, 'max_depth': 12}
+# best_score_ :  0.8812870403871662
+# model.score :  0.8766537497268807
+# r2_score :  0.8766537497268807
+# 최적의 튠 ACC :  0.8766537497268807
+# 걸린시간 :  11.95 초
+#================================= GridSearchCV 결과 ===================================#
+# Fitting 5 folds for each of 66 candidates, totalling 330 fits
+# 최적의 매개변수 :  RandomForestRegressor(max_depth=12, n_jobs=-1)
+# 최적의 파라미터 :  {'max_depth': 12, 'n_estimators': 100, 'n_jobs': -1}
+# best_score_ :  0.8819299018937127
+# model.score :  0.8812905557370468
+# r2_score :  0.8812905557370467
+# 최적의 튠 ACC :  0.8812905557370468
+# 걸린시간 :  60.61 초
+# =======================================================================================#
+
+

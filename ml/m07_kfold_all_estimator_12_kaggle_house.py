@@ -1,21 +1,47 @@
 import numpy as np
 import pandas as pd
 from sklearn import datasets
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
+# from tensorflow.python.keras.models import Sequential
+# from tensorflow.python.keras.layers import Dense
+# from tensorflow.python.keras.callbacks import EarlyStopping
+from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
+import time
+import matplotlib.pyplot as plt
+from matplotlib import font_manager, rc
 from scipy.stats import norm, skew
-
 
 #1. 데이터
 path = './_data/house/'
 train_set = pd.read_csv(path + 'train.csv', index_col=0)
+# print(train_set)
+# print(train_set.columns)                         
+# print('train_set의 info :: ', train_set.info())
+# print(train_set.describe())
+# print(train_set.isnull().sum())
+
 test_set = pd.read_csv(path + 'test.csv', index_col=0)
+# print(test_set) 
+# print(test_set.columns) 
+# print('test_set의 info :: ', test_set.info())
+# print(test_set.describe())
+# print(test_set.isnull().sum())  # LotFrontage 227, SaleType 1
+
 submission = pd.read_csv(path + 'house_submission.csv')
-# print('train.shape, test.shape, submit.shape', 
-#       train_set.shape, test_set.shape, submission.shape)    # (1460, 81) (1459, 80) (1459, 2)
+print('train.shape, test.shape, submit.shape', 
+      train_set.shape, test_set.shape, submission.shape)    # (1460, 81) (1459, 80) (1459, 2)
 
 
 ###### 데이터 전처리 ######
-# print('after drop Id ::', train_set.shape, test_set.shape)  # (1460, 80) (1459, 79)
+print('after drop Id ::', train_set.shape, test_set.shape)  # (1460, 80) (1459, 79)
+
+# 'SalePrice'와  'GrLivArea'의 관계
+# fig, ax = plt.subplots()
+# ax.scatter(x = train_set['GrLivArea'], y = train_set['SalePrice'])
+# plt.ylabel('SalePrice', fontsize = 13)
+# plt.ylabel('GrLivArea', fontsize = 13)
+# plt.show()
 
 # 'SalePrice'와  'GrLivArea'의 이상치 제거
 train_set = train_set.drop(train_set[(train_set['GrLivArea']>4000) 
@@ -210,30 +236,103 @@ y = label   # train_set['SalePrice']
 
 print(x.shape, y.shape)
 # train 데이터와 test 데이터의 분리
-# x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, random_state =7)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, random_state =7)
 # train 데이터와 test 데이터의 분리 결과 확인
-# print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1166, 80) (292, 80) (1166,) (292,)
+print(x_train.shape, x_test.shape, y_train.shape, y_test.shape) # (1166, 80) (292, 80) (1166,) (292,)
 
-n_splits = 7
-kfold = KFold(n_splits=n_splits, shuffle=True, random_state=7)
+scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+# scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test
 
 #2. 모델구성
-from sklearn.ensemble import RandomForestRegressor
+# model = Sequential()
+# model.add(Dense(100, activation='linear', input_dim=79))
+# model.add(Dense(100, activation ='relu'))
+# model.add(Dense(100, activation ='relu'))
+# model.add(Dense(100, activation ='relu'))
+# model.add(Dense(100, activation ='relu'))
+# model.add(Dense(1, activation='linear'))
+from sklearn.svm import LinearSVR
+model = LinearSVR()
 
-model = RandomForestRegressor()
+#3. 컴파일, 훈련
+# model.compile(loss='mae', optimizer='adam', metrics=['mse'])
+
+# earlyStopping = EarlyStopping(monitor='val_loss', patience=200, mode='min',
+#                               restore_best_weights=True, 
+#                               verbose=1)
+# start_time = time.time()
+# hist = model.fit(x_train, y_train, epochs=4000, batch_size=100,
+#                  validation_split=0.2,
+#                  callbacks=[earlyStopping],
+#                  verbose=1)
+# end_time = time.time() - start_time
+model.fit(x_train, y_train)
+
+#4. 평가예측
+# loss = model.evaluate(x_test, y_test)
+# print('loss : ', loss)  
+results = model.score(x_test, y_test)
+print('결과 r2 : ', results)
+      
+# #### mse를 rmse로 변환 ####
+# y_predict = model.predict(x_test)
+# def RMSE(y_test, y_predict):
+#     return np.sqrt(mean_squared_error(y_test, y_predict))
+
+# rmse = RMSE(y_test, y_predict)
+# print("RMSE : ", rmse)
 
 
-#3.4. 컴파일, 훈련, 평가, 예측
-scores = cross_val_score(model, x, y, cv=kfold)
-print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
+# # r2 값 구하기  
+# r2 = r2_score(y_test, y_predict)
+# print("R2 : ", r2)  
+
+# #### summit ####
+# y_summit = model.predict(test_set)
+# print(y_summit)
+# print(y_summit.shape)   # (1458, 1)
+
+# submission['SalePrice'] = y_summit
+
+# # Brutal approach to deal with predictions close to outer range 
+# q1 = submission['SalePrice'].quantile(0.0045)
+# q2 = submission['SalePrice'].quantile(0.99)
+
+# submission['SalePrice'] = submission['SalePrice'].apply(lambda x: x if x > q1 else x*0.77)
+# submission['SalePrice'] = submission['SalePrice'].apply(lambda x: x if x < q2 else x*1.1)
+
+# submission.to_csv(path + 'submission3.csv', index=False)
 
 
-#================================= StraitifiedKFold 적용 결과 ================================================#
-# ACC :  [0.89293753 0.86580279 0.90061535 0.86768612 0.89856851 0.88054473
-#  0.90536165]
-#  cross_val_score :  0.8874
-#==================================== KFold 적용 결과 ========================================================#
-# ACC :  [0.89418261 0.86460955 0.89754294 0.86672941 0.90049894 0.86738502
-#  0.91027553]
-#  cross_val_score :  0.8859
-#=============================================================================================================#
+# print("=================================================================")   
+# print(hist)     # <tensorflow.python.keras.callbacks.History object at 0x000002664FF27AF0>
+# print("=================================================================")
+# print(hist.history)     # loss 와 val_loss의 key, value를 합쳐놓은 것
+# print("=================================================================")
+# print(hist.history['loss'])
+# print("=================================================================")
+# print(hist.history['val_loss'])
+
+
+#4_1. 그래프로 비교
+# font_path = 'C:\Windows\Fonts\malgun.ttf'
+# font = font_manager.FontProperties(fname=font_path).get_name()
+# rc('font', family=font)
+# plt.figure(figsize=(9,6))
+# plt.plot(hist.history['loss'], marker='.', c='red', label='loss')
+# plt.plot(hist.history['val_loss'], marker='.', c='blue', label='val_loss')
+# plt.grid()
+# # plt.title('loss & val_loss')    
+# plt.title('로스값과 검증로스값')    
+# plt.ylabel('loss')
+# plt.xlabel('epochs')
+# # plt.legend(loc='upper right')   # 우측상단에 라벨표시
+# plt.legend()   # 자동으로 빈 공간에 라벨표시
+# plt.show()
+
+
