@@ -38,10 +38,8 @@ print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
 
 
 #===================================== 결  과 ==========================================#
-# LinearSVC() 결과 acc :  
-# LogisticRegression() 결과 acc :  
-# KNeighborsClassifier() 결과 acc :  
-# DecisionTreeClassifier() 결과 acc :  
-# RandomForestClassifier() 결과 acc :  0.9531909766844134
+# ACC :  [0.95726257 0.95809904 0.95744846 0.95579101 0.95734003 0.95830042
+#  0.9567514  0.95766532 0.95927567]
+#  cross_val_score :  0.9575
 #=======================================================================================#
 

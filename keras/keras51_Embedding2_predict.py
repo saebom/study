@@ -33,7 +33,8 @@ print(x)
 # from keras.preprocessing.sequence import pad_sequences    
 from keras_preprocessing.sequence import pad_sequences
 
-pad_x = pad_sequences(x, padding='pre', maxlen=5, truncating='pre') # truncating 사용
+pad_x = pad_sequences(x, padding='pre', maxlen=5, truncating='pre') # truncating 사용, 
+                                                                    #  truncating = pre/post : 값이 n개 이상일 경우 pre 면 앞의 값 삭제 post는 뒤에 값을 삭제함
 print(pad_x)
 print(pad_x.shape)  #(14, 5)
 

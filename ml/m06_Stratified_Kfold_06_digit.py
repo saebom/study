@@ -1,20 +1,21 @@
 import numpy as np
 from sklearn import datasets
-from sklearn.datasets import fetch_covtype
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split, KFold, StratifiedKFold, cross_val_score
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.metrics import r2_score, accuracy_score
 
 
 #1. 데이터
-datasets = fetch_covtype()
+datasets = load_digits()
 x = datasets.data
 y = datasets.target
 
 # x_train, x_test, y_train, y_test = train_test_split(
 #     x, y, train_size=0.7, random_state=72
 # )
-n_splits = 9
-kfold = KFold(n_splits=n_splits, shuffle=True, random_state=66)
+n_splits = 5
+kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=0)
 
 
 #2. 모델 구성
@@ -37,11 +38,11 @@ print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
 
 
 
-#===================================== 결  과 ==========================================#
-# LinearSVC() 결과 acc :  
-# LogisticRegression() 결과 acc :  
-# KNeighborsClassifier() 결과 acc :  
-# DecisionTreeClassifier() 결과 acc :  
-# RandomForestClassifier() 결과 acc :  0.9531909766844134
-#=======================================================================================#
+#=============================== StraitifiedKFold 적용 결과 ==================================================#
+# ACC :  [0.98055556 0.975      0.97214485 0.97493036 0.9637883 ] 
+#  cross_val_score :  0.9733
+#==================================== KFold 적용 결과 ========================================================#
+# ACC :  [0.96666667 0.97222222 0.98050139 0.96935933 0.96657382] 
+#  cross_val_score :  0.9711
+#=============================================================================================================#
 

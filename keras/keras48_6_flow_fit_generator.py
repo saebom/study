@@ -1,4 +1,3 @@
-from click import argument
 from keras.datasets import fashion_mnist
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np

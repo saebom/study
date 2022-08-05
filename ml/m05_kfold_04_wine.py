@@ -1,19 +1,22 @@
 import numpy as np
 from sklearn import datasets
-from sklearn.datasets import fetch_covtype
+from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.metrics import r2_score, accuracy_score
 
 
 #1. 데이터
-datasets = fetch_covtype()
-x = datasets.data
-y = datasets.target
+datasets = load_wine()
+x, y = datasets.data, datasets.target
+
+print(x.shape)  # (178, 13)
+
 
 # x_train, x_test, y_train, y_test = train_test_split(
-#     x, y, train_size=0.7, random_state=72
+#     x, y, train_size=0.7, random_state=66
 # )
-n_splits = 9
+n_splits=9
 kfold = KFold(n_splits=n_splits, shuffle=True, random_state=66)
 
 
@@ -24,11 +27,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-# model = LinearSVC()
-# model = LogisticRegression()
+# model = SVC()
+model = LogisticRegression()
 # model = KNeighborsClassifier()
 # model = DecisionTreeClassifier()
-model = RandomForestClassifier()
+# model = RandomForestClassifier()
 
 
 #3.4. 컴파일, 훈련, 평가, 예측
@@ -36,12 +39,10 @@ scores = cross_val_score(model, x, y, cv=kfold)
 print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
 
 
-
 #===================================== 결  과 ==========================================#
-# LinearSVC() 결과 acc :  
-# LogisticRegression() 결과 acc :  
-# KNeighborsClassifier() 결과 acc :  
-# DecisionTreeClassifier() 결과 acc :  
-# RandomForestClassifier() 결과 acc :  0.9531909766844134
+# ACC :  [1.         0.95       0.95       0.95       1.         0.95
+#  0.9        1.         0.94736842]
+#  cross_val_score :  0.9608
 #=======================================================================================#
+
 

@@ -39,27 +39,10 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
 #2. 모델구성
-# model = Sequential()
-# model.add(Dense(100, activation = 'linear', input_dim=9))
-# model.add(Dense(100, activation='relu'))
-# model.add(Dense(100, activation='relu'))
-# model.add(Dense(100, activation='relu'))
-# model.add(Dense(1, activation='linear'))
 model = LinearSVR()
 
 
 #3. 컴파일, 훈련
-# model.compile(loss = 'mae', optimizer="adam", metrics=['mse'])
-
-# earlyStopping = EarlyStopping(monitor='val_loss', patience=200, mode='min',
-#                               restore_best_weights=True,
-#                               verbose=1)
-# start_time = time.time()
-# hist = model.fit(x_train, y_train, epochs=5000, batch_size=100, 
-#           validation_split=0.2,
-#           callbacks=[earlyStopping],
-#           verbose=1)
-# end_time = time.time() - start_time
 model.fit(x_train, y_train)
 
 
