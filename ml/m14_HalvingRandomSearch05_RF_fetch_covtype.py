@@ -83,9 +83,23 @@ print('걸린시간 : ', round(end_time-start, 2), "초")
 
 
 #============================= HalvingRandomSearchCV 결과 ===============================#
-
+# Fitting 5 folds for each of 2 candidates, totalling 10 fits
+# 최적의 매개변수 :  RandomForestClassifier(n_estimators=200, n_jobs=2)
+# 최적의 파라미터 :  {'n_jobs': 2, 'n_estimators': 200}
+# best_score_ :  0.771957671957672
+# model.score :  0.9582732513310078
+# accuracy_score :  0.9582732513310078
+# 최적의 튠 ACC :  0.9582732513310078
+# 걸린시간 :  150.04 초
 #============================= HalvingGridSearchCV 결과 ===============================#
-
+# Fitting 5 folds for each of 2 candidates, totalling 10 fits
+# 최적의 매개변수 :  RandomForestClassifier(n_estimators=200, n_jobs=4)
+# 최적의 파라미터 :  {'n_jobs': 4, 'n_estimators': 200}
+# best_score_ :  0.9478015630884826
+# model.score :  0.9536442078208188
+# accuracy_score :  0.9536442078208188
+# 최적의 튠 ACC :  0.9536442078208188
+# 걸린시간 :  821.33 초
 #============================== RandomizedSearchCV 결과 ===============================#
 
 #================================= GridSearchCV 결과 ===================================#
