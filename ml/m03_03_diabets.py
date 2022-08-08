@@ -29,7 +29,7 @@ x_test = scaler.transform(x_test)
 
 
 #2. 모델 구성
-from sklearn.svm import LinearSVC, LinearSVR, SVC
+from sklearn.svm import LinearSVC, LinearSVR, SVC, SVR
 from sklearn.linear_model import Perceptron
 from sklearn.linear_model import LogisticRegression, LinearRegression     #LogisticRegression은 분류모델, LinearRegression 회귀모델
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
@@ -37,6 +37,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
 # model = LinearSVR()
+# model = SVR()
 # model = LinearRegression()
 # model = KNeighborsRegressor()
 # model = DecisionTreeRegressor()

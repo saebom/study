@@ -27,7 +27,7 @@ model = RandomForestRegressor()
 
 #3.4. 컴파일, 훈련, 평가, 예측
 scores = cross_val_score(model, x, y, cv=kfold)
-print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
+print('R2 : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
 
 
 #==================================== KFold 적용 결과 ========================================================#

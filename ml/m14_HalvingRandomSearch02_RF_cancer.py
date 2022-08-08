@@ -2,9 +2,6 @@ import numpy as np
 from sklearn import datasets
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
-import pandas as pd
-from sklearn import datasets
-from sklearn.datasets import load_iris
 from sklearn.metrics import r2_score, accuracy_score
 from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score, train_test_split
 from sklearn.experimental import enable_halving_search_cv

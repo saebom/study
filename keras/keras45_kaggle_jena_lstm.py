@@ -23,7 +23,6 @@ print(dataset.describe)
 
 
 
-=======
 import numpy as np
 import pandas as pd
 from tensorflow.python.keras.models import Sequential, Model, load_model
@@ -271,4 +270,3 @@ for x, y in dataset_test.take(5):
 # truth: [0.98434055]
 # prediction: [0.49841094]
 # truth: [0.41109318]
->>>>>>> 945c456287fa3657982bfc4730df4aec3528c909

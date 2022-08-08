@@ -37,30 +37,65 @@ for (name, algorithm) in allAlgorithms:
 
 
 #===================================== 결  과 ==========================================#
-# ACC :  [0.55381531 0.41932652 0.53042977 0.56238275 0.52622158]
+# ACC :  [0.55381531 0.41932652 0
 #  cross_val_score ;  0.5184
-# ACC :  [0.96207499 0.96118861 0.96199721 0.96131736 0.9615239 ]
+# ACC :  [0.96207499 0.96118861 0
 #  cross_val_score ;  0.9616
-# ACC :  [0.63382185 0.63033657 0.6291544  0.6329237  0.63001497]
+# ACC :  [0.63382185 0.63033657 0
 #  cross_val_score ;  0.6313
-# ACC :  [0.6722718  0.68255553 0.67342214 0.68373178 0.69576255] 
+# ACC :  [0.6722718  0.68255553 0
 #  cross_val_score ;  0.6815
-# ACC :  [nan nan nan nan nan]   
-#  cross_val_score ;  nan        
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
 # ClassifierChain 은 안나온 놈!!!
-# ACC :  [nan nan nan nan nan] 
-#  cross_val_score ;  nan      
-# ACC :  [0.93867628 0.93948521 0.93837455 0.94015594 0.94011291] 
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
+# ACC :  [0.93867628 0.93948521 0
 #  cross_val_score ;  0.9394
-# ACC :  [0.48858463 0.48664837 0.48889004 0.48765942 0.48621366] 
+# ACC :  [0.48858463 0.48664837 0
 #  cross_val_score ;  0.4876
-# ACC :  [0.857835   0.86207757 0.86173216 0.87752362 0.84928831] 
+# ACC :  [0.857835   0.86207757 0
 #  cross_val_score ;  0.8617
-# ACC :  [0.9542955  0.95308211 0.95264281 0.95442419 0.9524793 ] 
+# ACC :  [0.9542955  0.95308211 0
 #  cross_val_score ;  0.9534
-# ACC :  [0.4565889  0.45806046 0.45982857 0.46019862 0.46023304] 
+# ACC :  [0.4565889  0.45806046 0
 #  cross_val_score ;  0.459
-# ACC :  [nan nan nan nan nan] 
-#  cross_val_score ;  nan   
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
+# ACC :  [0.77273392 0.7717787  0
+#  cross_val_score ;  0.7727
+# ACC :  [0.77929141 0.78459248 0
+#  cross_val_score ;  0.7881
+# ACC :  [0.96880459 0.9688132  0
+#  cross_val_score ;  0.9688
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
+# ACC :  [0.68061066 0.67919073 0
+#  cross_val_score ;  0.6798
+# ACC :  [0.53957299 0.61398587 0
+#  cross_val_score ;  0.5788
+# ACC :  [0.61996678 0.62153301 0
+#  cross_val_score ;  0.6212
+# ACC :  [0.67208248 0.66703097 0
+#  cross_val_score ;  0.6692
+# ACC :  [0.76649484 0.76209736 0
+#  cross_val_score ;  0.7604
+# MultiOutputClassifier 은 안나온
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
+# ACC :  [0.19400532 0.19407416 0
+#  cross_val_score ;  0.1939
+# ACC :  [nan nan nan nan nan]
+#  cross_val_score ;  nan
+# OneVsOneClassifier 은 안나온 놈
+# OneVsRestClassifier 은 안나온 놈
+# OutputCodeClassifier 은 안나온 
+# ACC :  [0.37369947 0.55767923 0
+# ACC :  [0.71485246 0.71494712 0.71597735 0.71472092 0.71213921]
+#  cross_val_score ;  0.7145
+# StackingClassifier 은 안나온 놈!!!
+# VotingClassifier 은 안나온 놈!!!
 #=======================================================================================#
 

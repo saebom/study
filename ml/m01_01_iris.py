@@ -34,7 +34,6 @@ print('y의 라벨값 : ', np.unique(y))    # y의 라벨값 :  [0 1 2]
 # print(y.shape)  # (150, 3)
 
 
-
 x_train, x_test, y_train, y_test = train_test_split(
    x, y, train_size=0.8, shuffle=True, random_state=72
 )

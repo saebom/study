@@ -1,0 +1,152 @@
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
+
+# 1. 데이터
+
+path = './_data/kaggle_titanic/'
+train_set = pd.read_csv(path + 'train.csv', index_col=0)
+test_set = pd.read_csv(path + 'test.csv', index_col=0)
+
+submission = pd.read_csv(path + 'gender_submission.csv')
+print('train.shape, test.shape, submit.shape', 
+      train_set.shape, test_set.shape, submission.shape)    # (891, 11) (418, 10) (418, 2)
+
+# 데이터 전처리
+train_set[['Pclass', 'Survived']].groupby(['Pclass'], as_index=False).mean().sort_values(by='Survived', ascending=False)
+train_set[['Sex', 'Survived']].groupby(['Sex'], as_index=False).mean().sort_values(by='Survived', ascending=False)
+train_set[['SibSp', 'Survived']].groupby(['SibSp'], as_index=False).mean().sort_values(by='Survived', ascending=False)
+train_set[['Parch', 'Survived']].groupby(['Parch'], as_index=False).mean().sort_values(by='Survived', ascending=False)
+
+# Ticket, Cabin, Name 삭제
+train_set = train_set.drop(['Ticket', 'Cabin'], axis=1)
+test_set = test_set.drop(['Ticket', 'Cabin'], axis=1)
+
+train_set = train_set.drop(['Name'], axis=1)
+test_set = test_set.drop(['Name'], axis=1)
+
+# Age NaN값 변환
+train_set['Age'] = train_set['Age'].fillna(train_set.Age.dropna().mode()[0])
+test_set['Age'] = test_set['Age'].fillna(train_set.Age.dropna().mode()[0])
+
+
+# Embarked, Sex NaN값 및 Object => int 변환
+train_set['Embarked'] = train_set['Embarked'].fillna(train_set.Embarked.dropna().mode()[0])
+train_set['Embarked'] = train_set['Embarked'].map({'S':0, 'C':1, 'Q':2}).astype(int)
+
+test_set['Embarked'] = test_set['Embarked'].fillna(test_set.Embarked.dropna().mode()[0])
+test_set['Embarked'] = test_set['Embarked'].map({'S':0, 'C':1, 'Q':2}).astype(int)
+
+train_set['Sex'] = train_set['Sex'].fillna(train_set.Sex.dropna().mode()[0])
+train_set['Sex'] = train_set['Sex'].map({'male':0, 'female':1}).astype(int)
+
+test_set['Sex'] = test_set['Sex'].fillna(test_set.Sex.dropna().mode()[0])
+test_set['Sex'] = test_set['Sex'].map({'male':0, 'female':1}).astype(int)
+
+print(train_set.shape, test_set.shape)  # (891, 8) (418, 7)
+print(train_set.head(5))
+print(test_set.head(5))
+print(train_set.isnull().sum())  
+print(test_set.isnull().sum())  
+
+# x, y 데이터
+x = train_set.drop(['Survived'], axis=1)
+print(x)
+print(x.columns)    # 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked'
+
+y = train_set['Survived']
+print(y)
+print(y.shape)  # (891,)
+
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, train_size=0.9, shuffle=True, random_state=72
+)
+# scaler = MinMaxScaler()
+# x_train = scaler.fit_transform(x_train)
+# x_test = scaler.transform(x_test)   # train은 fit_transform, test는 transform으로 overfit(과적합)이 안 잡힘
+
+parameters = [
+    {'RF__n_estimators' : [100, 200], 'RF__max_depth':[6, 8, 10, 12], 'RF__n_jobs' : [-1, 2, 4]},  #n_estimators 는 epoch
+    {'RF__max_depth' : [6, 8, 10, 12], 'RF__min_samples_split' : [2, 3, 5, 10]},
+    {'RF__n_estimators' : [100, 200], 'RF__min_samples_leaf' : [3, 5, 7, 10]},
+    {'RF__min_samples_split' : [2, 3, 5, 10], 'RF__n_jobs' : [-1, 2, 4]}, 
+    {'RF__n_estimators' : [100, 200],'RF__n_jobs' : [-1, 2, 4]}
+]
+
+n_splits=5
+kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=66)
+
+
+
+#2. 모델
+from sklearn.svm import LinearSVC, SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline, Pipeline
+
+# model = SVC()
+# model = make_pipeline(MinMaxScaler(), SVC())    # pipeline에는 scaling과 model을 정의하지 않고 사용
+# model = make_pipeline(MinMaxScaler(), RandomForestClassifier())    # pipeline에는 scaling과 model을 정의하지 않고 사용
+# model = make_pipeline(StandardScaler(), RandomForestClassifier())    # pipeline에는 scaling과 model을 정의하지 않고 사용
+pipe = Pipeline([('standardScaler', MinMaxScaler()), ('RF', RandomForestClassifier())], verbose=1)
+
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import HalvingGridSearchCV, HalvingRandomSearchCV
+
+model = RandomizedSearchCV(pipe, parameters, cv=5, verbose=1)
+
+
+#3. 훈련
+model.fit(x_train, y_train) # make_pipeline에서의 fit은 fit_transform이 적용됨
+
+
+#4. 평가, 예측
+result = model.score(x_test, y_test)    # make_pipeline에서의 model.score는 transform이 적용됨
+print('model.score : ', result) 
+
+
+#=========================== pipeline & gridSearch 적용결과 =============================#
+# model.score :  0.8555555555555555
+#============================= HalvingRandomSearchCV 결과 ===============================#
+# Fitting 5 folds for each of 2 candidates, totalling 10 fits
+# 최적의 매개변수 :  RandomForestClassifier(max_depth=12, min_samples_split=5, n_estimators=200,
+#                        n_jobs=2)
+# 최적의 파라미터 :  {'n_jobs': 2, 'n_estimators': 200, 'min_samples_split': 5, 'max_depth': 12}
+# best_score_ :  0.8060228452751816
+# model.score :  0.8444444444444444
+# accuracy_score :  0.8444444444444444
+# 최적의 튠 ACC :  0.8444444444444444
+# 걸린시간 :  12.94 초        
+#============================= HalvingGridSearchCV 결과 ===============================#       
+# Fitting 5 folds for each of 6 candidates, totalling 30 fits
+# 최적의 매개변수 :  RandomForestClassifier(max_depth=10, min_samples_split=3, n_estimators=200,
+#                        n_jobs=4)
+# 최적의 파라미터 :  {'max_depth': 10, 'min_samples_split': 3, 'n_estimators': 200, 'n_jobs': 4}
+# best_score_ :  0.8133783316026306
+# model.score :  0.8444444444444444
+# accuracy_score :  0.8444444444444444
+# 최적의 튠 ACC :  0.8444444444444444
+# 걸린시간 :  35.17 초
+#============================== RandomizedSearchCV 결과 ===============================#
+# Fitting 5 folds for each of 10 candidates, totalling 50 fits
+# 최적의 매개변수 :  RandomForestClassifier(max_depth=10, min_samples_split=5, n_estimators=200,
+#                        n_jobs=4)
+# 최적의 파라미터 :  {'n_jobs': 4, 'n_estimators': 200, 'min_samples_split': 5, 'max_depth': 10}
+# best_score_ :  0.8264751552795031
+# model.score :  0.8444444444444444
+# accuracy_score :  0.8444444444444444
+# 최적의 튠 ACC :  0.8444444444444444
+# 걸린시간 :  4.7 초
+#================================= GridSearchCV 결과 ===================================#
+# Fitting 5 folds for each of 138 candidates, totalling 690 fits
+# 최적의 매개변수 :  RandomForestClassifier(max_depth=10, min_samples_split=3)
+# 최적의 파라미터 :  {'max_depth': 10, 'min_samples_split': 3}
+# best_score_ :  0.8327096273291927
+# model.score :  0.8444444444444444
+# accuracy_score :  0.8444444444444444
+# 최적의 튠 ACC :  0.8444444444444444
+# 걸린시간 :  26.63 초
+# =======================================================================================#
+
+

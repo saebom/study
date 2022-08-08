@@ -90,8 +90,21 @@ print('걸린시간 : ', round(end_time-start, 2), "초")
 # 최적의 튠 ACC :  0.9536442078208188
 # 걸린시간 :  821.33 초
 #============================== RandomizedSearchCV 결과 ===============================#
-
+# Fitting 5 folds for each of 10 candidates, totalling 50 fits
+# 최적의 매개변수 :  RandomForestClassifier(min_samples_leaf=5, n_estimators=200)
+# 최적의 파라미터 :  {'n_estimators': 200, 'min_samples_leaf': 5}
+# best_score_ :  0.9241814744697446
+# model.score :  0.9319636956122637
+# accuracy_score :  0.9319636956122637
+# 최적의 튠 ACC :  0.9319636956122637
+# 걸린시간 :  856.85 초
 #================================= GridSearchCV 결과 ===================================#
-
+# Fitting 5 folds for each of 138 candidates, totalling 690 fits
+# 최적의 매개변수 :  RandomForestClassifier(n_estimators=200, n_jobs=2)
+# 최적의 파라미터 :  {'n_estimators': 200, 'n_jobs': 2}
+# best_score_ :  0.947761047248018
+# model.score :  0.9533401413622178
+# accuracy_score :  0.9533401413622178
+# 최적의 튠 ACC :  0.9533401413622178
+# 걸린시간 :  9050.24 초
 # =======================================================================================#
-

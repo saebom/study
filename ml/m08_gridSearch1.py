@@ -42,9 +42,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
 # model = SVC(C=1, kernel='linear', degree=3) # 33번 라인 parameters 12회
-model = GridSearchCV(SVC(), parameters, cv=kfold, verbose=1, # GridSearchCV의 본래 목적은 최적 하이퍼 파라미터를 찾는 것. refit을 False로 하면 최적 하이퍼 파라미터만 찾아준
+model = GridSearchCV(SVC(), parameters, cv=kfold, verbose=1, # GridSearchCV의 본래 목적은 최적 하이퍼 파라미터를 찾는 것. refit을 False로 하면 최적 하이퍼 파라미터만 찾아줌
                      refit=True, n_jobs=-1)                  # n_jobs 는 cpu 갯수, -1면 전체 사용
-
+                                                             # refit(bool) : true인 경우 최적의 하이퍼 파라미터를 찾은 후 입력된 개체를 해당 하이퍼 파라미터로 재학습
 
 #3. 컴파일, 훈련
 import time

@@ -81,6 +81,7 @@ allAlgorithms :  [('AdaBoostClassifier', <class 'sklearn.ensemble._weight_boosti
 '''
 print('모델의 갯수 : ', len(allAlgorithms)) # 41
 
+#3.4. 훈련, 평가
 for (name, algorithm) in allAlgorithms: 
     try :
         model = algorithm()
@@ -136,12 +137,6 @@ SVC 의 정답률 :  1.0
 StackingClassifier 은 안나온 놈!!!
 VotingClassifier 은 안나온 놈!!!
 '''
-    
-#3. 훈련
-
-
-#4. 평가, 예측
-
 
 
 #===================================== 결  과 ==========================================#

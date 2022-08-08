@@ -70,7 +70,7 @@ print("최적의 파라미터 : ", model.best_params_)
 # 최적의 파라미터 :  {'C': 1, 'degree': 3, 'kernel': 'linear'}
 
 print("best_score_ : ", model.best_score_)
-best_score_ :  0.9583333333333334
+# best_score_ :  0.9583333333333334
 
 print("model.score : ", model.score(x_test, y_test))
 # model.score ;  1.0
