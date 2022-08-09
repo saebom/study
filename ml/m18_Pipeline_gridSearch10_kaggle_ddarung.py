@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from sklearn import datasets
-from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import warnings
 warnings.filterwarnings('ignore')

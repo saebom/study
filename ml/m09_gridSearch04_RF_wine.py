@@ -54,7 +54,7 @@ from sklearn.ensemble import RandomForestClassifier
 model = GridSearchCV(RandomForestClassifier(), parameters, cv=kfold, verbose=1, 
                      refit=True, n_jobs=-1)                  
 
-# 4. 평가, 예측
+# 3. 훈련
 import time
 start = time.time()
 model.fit(x_train, y_train) 

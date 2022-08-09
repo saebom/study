@@ -52,9 +52,13 @@ print(test_set.head(5))
 print(train_set.isnull().sum())  
 print(test_set.isnull().sum())  
 
+train_set = train_set.drop(['Parch'], axis=1)
+print(train_set.shape)  # (891, 7)
+
+
 # x, y 데이터
 x = train_set.drop(['Survived'], axis=1)
-print(x.shape)  # (891, 7)
+print(x.shape)  # (891, 6)
 print(x.columns)    # 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked'
 
 y = train_set['Survived']
@@ -82,10 +86,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier
 
-model = DecisionTreeClassifier()
+# model = DecisionTreeClassifier()
 # model = RandomForestClassifier()
 # model = GradientBoostingClassifier()
-# model = XGBClassifier()
+model = XGBClassifier()
 
 
 
@@ -108,24 +112,24 @@ print(model, ': ', model.feature_importances_)
 
 #결과비교
 
-#======================================  [] 삭제  결과 =======================================#
+#==================================================  ['Survived'] 삭제  결과 ==============================================#
 # 1. DecisionTree
 # 기존 acc : 0.770949720670391
-# 컬럼 삭제 후 acc : 
+# 컬럼 삭제 후 acc : 0.7821229050279329
 # [0.06293319 0.31729789 0.24903294 0.05000574 0.02168197 0.26767615 0.03137212]
 
 # 2. RandomForestClassifier
 # 기존 acc : 0.8100558659217877
-# 컬럼 삭제 후 acc :  
+# 컬럼 삭제 후 acc :  0.8156424581005587
 # [0.07060852 0.26544044 0.25912464 0.04894936 0.03873309 0.28097624 0.03616771]
 
 # 3. GradientBoostingClassifier
 # 기존 acc :  0.8547486033519553
-# 컬럼 삭제 후 acc :  
+# 컬럼 삭제 후 acc :  0.8603351955307262
 # [0.11551963 0.48075184 0.12908022 0.04891729 0.00693149 0.18364595 0.03515358]
 
 # 4. XGBClassifier
 # 기존 acc :  0.8268156424581006
-# 컬럼 삭제 후 acc : 
+# 컬럼 삭제 후 acc : 0.8379888268156425
 # [0.15412153 0.6105986  0.03736079 0.0729577  0.03766907 0.04485419  0.04243808]
 #=========================================================================================================================#

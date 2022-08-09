@@ -1,18 +1,19 @@
 import numpy as np
-from sklearn.datasets import fetch_covtype
+from sklearn.datasets import load_digits
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 #1. 데이터
-datasets = fetch_covtype()
+datasets = load_digits()
 x = datasets.data
 y = datasets.target
 print(datasets.DESCR)
-print(x.shape)  # (581012, 54)
+print(x.shape)  # (1797, 64)
 
 # drop_features
-x = np.delete(x, [], axis=1)
-print(x.shape)  # (581012, )
+x = np.delete(x, [0, 2, 7, 8, 11, 14, 15, 16, 17, 22, 23, 25, 
+                  31, 32, 33, 35, 38, 39, 40, 46, 47, 48, 55, 56, 57, 63], axis=1)
+print(x.shape)  # (1797, 38)
 
 
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
@@ -56,20 +57,20 @@ print(model, ': ', model.feature_importances_)
 
 #결과비교
 
-#======================================  [] 삭제  결과 =======================================#
+#====================================================  16 개 삭제  결과 ==================================================#
 # 1. DecisionTree
-# 기존 acc : 
-# 컬럼 삭제 후 acc :  
+# 기존 acc : 0.8888888888888888
+# 컬럼 삭제 후 acc :  0.8916666666666667 
 
 # 2. RandomForestClassifier
-# 기존 acc : 
-# 컬럼 삭제 후 acc : 
+# 기존 acc : 0.9777777777777777
+# 컬럼 삭제 후 acc :  0.9833333333333333
 
 # 3. GradientBoostingClassifier
-# 기존 acc :  
-# 컬럼 삭제 후 acc : 
+# 기존 acc :  0.9805555555555555
+# 컬럼 삭제 후 acc :  0.9861111111111112
 
 # 4. XGBClassifier
-# 기존 acc : 
-# 컬럼 삭제 후 acc : 
+# 기존 acc : 0.975
+# 컬럼 삭제 후 acc : 0.9861111111111112
 #=========================================================================================================================#
