@@ -1,4 +1,3 @@
-from cgi import test
 import numpy as np
 import pandas as pd
 from sklearn import datasets
@@ -30,8 +29,6 @@ train_set = train_set.drop(['hour_bef_temperature', 'hour_bef_ozone'], axis=1)
 print(train_set.shape)  # (1328, 8)
 test_set = test_set.drop(['hour_bef_temperature', 'hour_bef_ozone'], axis=1)
 print(test_set.shape)  # (715, 7)
-
-
 
 x = train_set.drop(['count'], axis=1)
 print(x.shape)  # (1328, 7)
