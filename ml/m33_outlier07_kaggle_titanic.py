@@ -60,17 +60,17 @@ def outliers(df, col):
             out.append(i)
             
     print("Outliers:",out)
-    print("min",np.min(out))
-    return np.min(out)
+    print("med",np.median(out))
+    return np.median(out)
     
 col = "Fare"
-minOutlier = outliers(train_set,col)
-train_set[train_set[col] >= minOutlier]
+medOutlier = outliers(train_set,col)
+train_set[train_set[col] >= medOutlier]
 # print(train_set.describe()["Fare"])
 
 col = "Age"
-minOutlier = outliers(train_set,col)
-train_set[train_set[col] >= minOutlier]
+medOutlier = outliers(train_set,col)
+train_set[train_set[col] >= medOutlier]
 # print(train_set.describe()["Age"])
 
 # x, y 데이터
@@ -89,14 +89,15 @@ imputer = IterativeImputer(random_state=72)
 imputer.fit(x)
 x = imputer.transform(x)
 
-
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, shuffle=True, random_state=72
     )
 
 #2. 모델구성
+from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
+# model = RandomForestClassifier()
 model = XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
 
 

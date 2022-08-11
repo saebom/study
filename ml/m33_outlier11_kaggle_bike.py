@@ -59,20 +59,20 @@ def outliers(df, col):
             out.append(i)
             
     print("Outliers:", out)
-    print("min",np.min(out))
-    return np.min(out)
+    print("min",np.median(out))
+    return np.median(out)
     
 col = "casual"
-minOutlier = outliers(train_set,col)
-train_set[train_set[col] >= minOutlier]
+medOutlier = outliers(train_set,col)
+train_set[train_set[col] >= medOutlier]
 
 col = "weather"
-minOutlier = outliers(train_set,col)
-train_set[train_set[col] >= minOutlier]
+medOutlier = outliers(train_set,col)
+train_set[train_set[col] >= medOutlier]
 
 col = "windspeed"
-minOutlier = outliers(train_set,col)
-train_set[train_set[col] >= minOutlier]
+medOutlier = outliers(train_set,col)
+train_set[train_set[col] >= medOutlier]
 
 
 # x, y 데이터
