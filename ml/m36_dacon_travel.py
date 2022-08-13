@@ -101,12 +101,12 @@ def outliers(df, col):
     return np.median(out)
     
 col = "MonthlyIncome"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
+medOutlier = outliers(all_data_set,col)
+all_data_set[all_data_set[col] >= medOutlier]
 
 col = "NumberOfTrips"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
+medOutlier = outliers(all_data_set,col)
+all_data_set[all_data_set[col] >= medOutlier]
 
                                 
 # x, y 데이터
@@ -152,15 +152,16 @@ x_test = scaler.transform(x_test)
 
 
 #2. 모델구성
-# from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.model_selection import GridSearchCV
 
 
-# # model = RandomForestClassifier()
-model = XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
+model = RandomForestClassifier()
+# model = XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
 # model = XGBClassifier(random_state=72)
 # model = GridSearchCV(xgb, parameters, verbose=2, cv=kfold, n_jobs=8)
+
 
 #3. 훈련
 model.fit(x_train, y_train) 
@@ -177,10 +178,11 @@ print(y_summit.shape)   # (2933,)
 # submission summit
 submission['ProdTaken'] = y_summit
 print(submission)
-submission.to_csv('./_data/travel/submission2.csv', index=False)
+submission.to_csv('./_data/travel/submission4.csv', index=False)
 
 
 #================================= 결과 ====================================#
 # GridSearch 적용 전 model.score :  0.8900255754475703
 # GridSearch 적용 후 model.score :  0.8797953964194374
+# 08.13 model.score :  0.8925831202046036
 #===========================================================================#
