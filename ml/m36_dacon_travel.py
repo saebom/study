@@ -17,17 +17,6 @@ print('train.shape, test.shape, submit.shape',
        train_set.shape, test_set.shape, submission.shape)    # (1955, 19) (2933, 18) (2933, 2)
 
 
-# 'ProdTaken'과  'MonthlyIncome'의 관계
-# import matplotlib.pyplot as plt
-# fig, ax = plt.subplots()
-# ax.scatter(x = train_set['ProdTaken'], y = train_set['MonthlyIncome'])
-# plt.ylabel('ProdTaken', fontsize = 13)
-# plt.ylabel('MonthlyIncome', fontsize = 13)
-# plt.show()
-
-# 이상치 제거 'ProdTaken'와  'MonthlyIncome'
-# train_set = train_set.drop(train_set[(train_set['MonthlyIncome']>80000) 
-#                                      & (train_set['ProdTaken']>=0)].index) 
 # 데이터 전처리
 train_set[['TypeofContact', 'ProdTaken']].groupby(['TypeofContact'], 
                                           as_index=False).mean().sort_values(by='ProdTaken', ascending=False)
@@ -43,6 +32,41 @@ train_set[['Designation', 'ProdTaken']].groupby(['Designation'],
 # all_data_set 데이터
 label = train_set['ProdTaken']
 all_data_set = pd.concat((train_set, test_set)).reset_index(drop=True)
+
+'''
+# 그래프 및 상관관계 확인
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(14,20))
+
+sns.set_theme(style="white") 
+cols=['ProdTaken','Age', 'TypeofContact', 'CityTier', 'DurationOfPitch', 'Occupation',
+    'Gender', 'NumberOfPersonVisiting', 'NumberOfFollowups',
+    'ProductPitched', 'PreferredPropertyStar', 'MaritalStatus',
+    'NumberOfTrips', 'Passport', 'PitchSatisfactionScore', 'OwnCar',
+    'NumberOfChildrenVisiting', 'Designation', 'MonthlyIncome']
+for i, variable in enumerate(cols):
+                     plt.subplot(10,2,i+1)
+                     order = all_data_set[variable].value_counts(ascending=False).index   
+                     #sns.set_palette(list_palette[i]) # to set the palette
+                     sns.set_palette('Set2')
+                     ax=sns.countplot(x=all_data_set[variable], data=all_data_set )
+                     sns.despine(top=True,right=True,left=True) # to remove side line from graph
+                     for p in ax.patches:
+                           percentage = '{:.1f}%'.format(100 * p.get_height()/len(all_data_set[variable]))
+                           x = p.get_x() + p.get_width() / 2 - 0.05
+                           y = p.get_y() + p.get_height()
+                           plt.annotate(percentage, (x, y),ha='center')
+                     plt.tight_layout()
+                     plt.title(cols[i].upper())
+
+sns.set_palette(sns.color_palette("Set2", 8))
+plt.figure(figsize=(15,10))
+sns.heatmap(all_data_set.corr(),annot=True)
+plt.show()
+'''
+
 all_data_set = all_data_set.drop(['ProdTaken'], axis=1)
 print(all_data_set.shape)   # (4888, 18)
 print(all_data_set.info())
@@ -69,10 +93,9 @@ for c in cols:
     all_data_set[c] = lbl.transform(list(all_data_set[c].values))
 print(all_data_set.info())
 
-    
-# ###(1) Age 와 MonthlyIncome
-# all_data_set['Age'] = all_data_set['Age'].fillna('None')
-# all_data_set['MonthlyIncome'] = all_data_set['MonthlyIncome'].fillna('None')
+print(all_data_set['TypeofContact'].value_counts())
+all_data_set['TypeofContact'].mode()
+all_data_set['TypeofContact']=all_data_set['TypeofContact'].fillna('Self Enquiry')
 
 ###(2) DurationOfPitch 와 TypeofContact
 all_data_set['DurationOfPitch'].isnull().sum()
@@ -81,74 +104,72 @@ all_data_set['DurationOfPitch'].value_counts()
 # all_data_set['MonthlyIncome'] = all_data_set['MonthlyIncome'].fillna(all_data_set['MonthlyIncome'].median())
 all_data_set['DurationOfPitch'] = all_data_set['DurationOfPitch'].fillna(all_data_set['DurationOfPitch'].median())
 all_data_set['TypeofContact'].value_counts()
-for col in ['Age', 'MonthlyIncome', 'NumberOfFollowups', 'PreferredPropertyStar', 'NumberOfTrips', 'NumberOfChildrenVisiting']:
+
+# all_data_set.Gender = all_data_set.Gender.replace("Fe Male","Female")
+all_data_set['Gender'] = all_data_set['Gender'].apply(lambda x: 'Female' if x == 'Fe Male' else x)
+
+# Age 와 MonthlyIncome
+all_data_set.groupby(["Designation", "Gender","MaritalStatus"])["Age"].median()
+all_data_set["Age"] = all_data_set.groupby(["Designation", "Gender","MaritalStatus"])["Age"].apply(
+    lambda x: x.fillna(x.median())
+)
+all_data_set.groupby(["Occupation",'Designation','Gender'])["MonthlyIncome"].median()
+all_data_set["MonthlyIncome"]=all_data_set.groupby(["Occupation",'Designation','Gender'])["MonthlyIncome"].apply(
+    lambda x: x.fillna(x.median())
+)
+
+print(all_data_set.sort_values(by=["MonthlyIncome"],ascending = False).head(5))
+
+all_data_set.fillna(all_data_set[all_data_set.DurationOfPitch>37].median())
+all_data_set.fillna(all_data_set[(all_data_set.MonthlyIncome>40000) | (all_data_set.MonthlyIncome<12000)].median())
+all_data_set.fillna(all_data_set[all_data_set.NumberOfTrips>10].median())
+
+print(all_data_set.info())
+
+for col in ['NumberOfFollowups', 'PreferredPropertyStar', 'NumberOfTrips', 'NumberOfChildrenVisiting']:
 # for col in ['NumberOfFollowups', 'PreferredPropertyStar', 'NumberOfTrips', 'NumberOfChildrenVisiting']:
     # all_data_set[col] = all_data_set[col].fillna(all_data_set[col].mode()[0])
     all_data_set[col] = all_data_set[col].fillna(all_data_set[col].median())
-
-def outliers(df, col):
-    out = []
-    m = np.mean(df[col])
-    sd = np.std(df[col])
     
-    for i in df[col]: 
-        z = (i-m)/sd
-        if np.abs(z) > 3: 
-            out.append(i)
-            
-    print("Outliers:", out)
-    print("min",np.median(out))
-    return np.median(out)
-    
-col = "MonthlyIncome"
-medOutlier = outliers(all_data_set,col)
-all_data_set[all_data_set[col] >= medOutlier]
+print(all_data_set.info())
 
-col = "NumberOfTrips"
-medOutlier = outliers(all_data_set,col)
-all_data_set[all_data_set[col] >= medOutlier]
+# all_data_set = all_data_set.drop(['PitchSatisfactionScore','ProductPitched','NumberOfFollowups','DurationOfPitch'],axis=1)
 
-                                
 # x, y 데이터
 # all_data_set을 train_set과 test_set으로 분할
 train_set = all_data_set[:len(train_set)]
 test_set = all_data_set[len(train_set):]
-print(train_set.shape, test_set.shape)  # (1955, 18) (2933, 18)
+print(train_set.shape, test_set.shape)  # (1955, 14) (2933, 14)
 
 x = train_set
 y = label   # train_set['ProdTaken']
 
-# IterativeImputer() 결측치 처리
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
-imputer = IterativeImputer(random_state=72)
-imputer.fit(x)
-x = imputer.transform(x)
-
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size=0.8, shuffle=True, random_state=72
+    x, y, train_size=0.8, shuffle=True, random_state=123, stratify=y
     )
 
-scaler = StandardScaler()
+scaler = MinMaxScaler()
+# scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
-# n_splits = 5
-# kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=123)
+n_splits = 5
+kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=123)
 
-# parameters = {'n_estimators': [100],
-#               'learning_rate' : [0.1],
-#               'max_depth' : [3], #default 6 => 통상 max는 4정도에서 성능이 좋다
-#               'gamma': [1],
-#               'min_child_weight': [1],
-#               'subsample' : [1],
-#               'colsample_bytree' : [1],
-#               'colsample_bylevel' : [1],
-#               'colsample_bynode' : [1],
-#               'reg_alpha' : [0],
-#               'reg_lambda' : [1],
-#               }  
+parameters = {'n_estimators': [100],
+              'learning_rate' : [0.3],
+              'max_depth' : [10], 
+              'gamma': [1],
+              'alpha' : [0.5],
+            #   'min_child_weight': [1,5],
+            #   'subsample' : [0.7,1],
+            #   'colsample_bytree' : [0.7,1],
+            #   'colsample_bylevel' : [0.7,1],
+            #   'colsample_bynode' : [0.7,1],
+            #   'reg_alpha' : [0, 0.1],
+            #   'reg_lambda' : [0, 0.1],
+              } 
 
 
 #2. 모델구성
@@ -157,9 +178,10 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import GridSearchCV
 
 
-model = RandomForestClassifier()
-# model = XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
-# model = XGBClassifier(random_state=72)
+# model = RandomForestClassifier()
+# xgb = XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
+model = XGBClassifier(learning_rate=0.3, max_depth=10, random_state=72, 
+                      tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
 # model = GridSearchCV(xgb, parameters, verbose=2, cv=kfold, n_jobs=8)
 
 
@@ -170,6 +192,7 @@ model.fit(x_train, y_train)
 #4. 평가, 예측
 result = model.score(x_test, y_test)    
 print('model.score : ', result) 
+# print(model.best_params_)
 
 y_summit = model.predict(test_set)
 print(y_summit)
@@ -178,11 +201,12 @@ print(y_summit.shape)   # (2933,)
 # submission summit
 submission['ProdTaken'] = y_summit
 print(submission)
-submission.to_csv('./_data/travel/submission4.csv', index=False)
+submission.to_csv('./_data/travel/submission5.csv', index=False)
 
 
 #================================= 결과 ====================================#
 # GridSearch 적용 전 model.score :  0.8900255754475703
 # GridSearch 적용 후 model.score :  0.8797953964194374
 # 08.13 model.score :  0.8925831202046036
+# 08.15 model.score :  0.8951406649616368
 #===========================================================================#
