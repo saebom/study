@@ -214,6 +214,14 @@ def validation(model, val_loader, criterion, device):
 
 # ## Run!!
 
+def run():
+    torch.multiprocessing.freeze_support()
+    print('loop')
+    
+if __name__ == '__main__':
+    run()
+    
+        
 # In[12]:
 
 
@@ -270,9 +278,13 @@ for test_input_path, test_target_path in zip(test_input_list, test_target_list):
 
 import zipfile
 os.chdir("C:/study/_data/bokchoy/test_target/")
-submission = zipfile.ZipFile("C:/study/_data/bokchoy/test_target/submission.zip", 'w')
+submission = zipfile.ZipFile("../submission.zip", 'w')
 for path in test_target_list:
     path = path.split('/')[-1]
     submission.write(path)
 submission.close()
 
+#===================================== 결과 =========================================#
+# Train Loss : [0.29276] Valid Loss : [0.24777]
+
+#====================================================================================#
