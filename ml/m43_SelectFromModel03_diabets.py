@@ -55,8 +55,8 @@ result = model.score(x_test, y_test)
 print('r2 : ', result)
 
 y_predict = model.predict(x_test)
-acc = r2_score(y_test, y_predict)
-print("진짜 최종 test 점수 : ", acc)
+r2 = r2_score(y_test, y_predict)
+print("진짜 최종 test 점수 : ", r2)
 
 print(model.feature_importances_)
 

@@ -29,7 +29,7 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, shuffle=True, random_state=72, stratify=y
     )
 
-################################ 불러오기 // 2. 모델, 3. 훈련 #################################
+############################## pickle 불러오기 // 2. 모델, 3. 훈련 ###############################
 import pickle
 path = 'D:/study_data/_save/_xg/'
 model = pickle.load(open(path+'m45_pickle1_save.dat', 'rb')) # read binary
@@ -46,7 +46,6 @@ print('f1_score(macro) : ', f1_score(y_test, y_predict, average='macro'))
 
 
 #======================= 결과 ===========================#
-# acc :  0.8952436684078724
-# 진짜 최종 test 점수 :  0.8014484920380607
+# 진짜 최종 test 점수 :  0.8952436684078724
 # f1_score(macro) :  0.8938595136537548
 #========================================================#

@@ -68,16 +68,6 @@ model = XGBClassifier(random_state=72,
 #3. 훈련
 model.fit(x_train, y_train)
 
-#4. 평가, 예측
-from sklearn.metrics import accuracy_score, f1_score
-result = model.score(x_test, y_test)    
-print('acc : ', result)
-
-y_predict = model.predict(x_test)
-acc = accuracy_score(y_test, y_predict)
-print("진짜 최종 test 점수 : ", acc)
-print('f1_score(macro) : ', f1_score(y_test, y_predict, average='macro'))
-
 # pickle 저장
 import pickle
 path = 'D:/study_data/_save/_xg/'
@@ -85,6 +75,4 @@ pickle.dump(model, open(path+'m45_pickle1_save.dat', 'wb')) # wright binary
 
 #======================= 결과 ===========================#
 # SMOTE 걸린 시간 :  27.997615575790405
-# acc :  0.8952436684078724
-# f1_score(macro) :  0.8938595136537548
 #========================================================#
