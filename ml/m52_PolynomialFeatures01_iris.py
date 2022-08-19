@@ -21,7 +21,7 @@ print(x.shape, y.shape)  # (150, 4), (150,)
 
 # LDA 
 # lda = LinearDiscriminantAnalysis()
-lda = LinearDiscriminantAnalysis(n_components=2)
+lda = LinearDiscriminantAnalysis(n_components=2)    # # degree : 거듭제곱의 차수, include_bias : 편향값(1) 추가 여부
 lda.fit(x, y)
 x = lda.transform(x)
 

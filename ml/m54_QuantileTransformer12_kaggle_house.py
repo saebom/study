@@ -1,11 +1,21 @@
+
 import numpy as np
 import pandas as pd
 from sklearn.datasets import fetch_california_housing
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-import time
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.preprocessing import MinMaxScaler, MaxAbsScaler, RobustScaler
+from sklearn.preprocessing import QuantileTransformer, PowerTransformer
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.feature_selection import SelectFromModel
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from lightgbm import LGBMClassifier, LGBMRegressor
+from sklearn.pipeline import make_pipeline
+import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings('ignore')
+import time
 
 
 #1. 데이터
@@ -177,51 +187,48 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, shuffle=True, random_state=72, train_size=0.8
 )
 
-scaler = StandardScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
+# 스케일링
+sts = StandardScaler() 
+mms = MinMaxScaler()
+mas = MaxAbsScaler()
+rbs = RobustScaler()
+qtf = QuantileTransformer() 
+ptf1 = PowerTransformer(method='yeo-johnson')
+ptf2 = PowerTransformer(method='box-cox')
+
+scalers = [sts, mms, mas, rbs, qtf, ptf1, ptf2]
+for scaler in scalers:
+    x_train = scaler.fit_transform(x_train)
+    x_test = scaler.transform(x_test)
+    # model = LinearRegression()
+    model = RandomForestRegressor()
+    model.fit(x_train, y_train)
+    y_predict = model.predict(x_test)
+    result = r2_score(y_test, y_predict)
+    scale_name = scaler.__class__.__name__
+    print('{0} 결과 : {1:.4f}'.format(scale_name, result), )
+    
 
 
 #2. 모델
-from sklearn.ensemble import VotingRegressor
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from xgboost import XGBClassifier, XGBRegressor
-from lightgbm import LGBMClassifier, LGBMRegressor
-from catboost import CatBoostClassifier, CatBoostRegressor
-
-xg = XGBRegressor(learning_rate=0.1, max_depth=3, random_state=1004, 
-                   tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
-lg = LGBMRegressor(learning_rate=0.3, max_depth=10, random_state=1004)
-cat = CatBoostRegressor(verbose=0)
-
-model = VotingRegressor(
-    estimators=[('XG', xg), ('LG', lg), ('CAT', cat)],
-    # voting='soft',   # hard
-    # voting='hard',
-    n_jobs=-1
-)
+model = LinearRegression()
+# model = RandomForestRegressor()
 
 #3. 훈련
 model.fit(x_train, y_train)
 
 #4. 평가, 예측
 y_predict = model.predict(x_test)
-score = r2_score(y_test, y_predict)
-print('보팅 결과 : ', round(score, 4))
+result = r2_score(y_test, y_predict)
+print("기냥 결과 : ", round(result, 4)) 
 
-classifiers = [cat, xg, lg]
-for model2 in classifiers:
-    model2.fit(x_train, y_train)
-    y_predict = model2.predict(x_test)
-    score2 = r2_score(y_test, y_predict)
-    class_name = model2.__class__.__name__
-    print('{0} 정확도 : {1:.4f}'.format(class_name, score2), )
 
 #=================================== 결과 =====================================#
-# 기존 : 0.9054801606268293
-# 보팅 결과 :  0.917
-# CatBoostRegressor 정확도 : 0.9202
-# XGBRegressor 정확도 : 0.9051
-# LGBMRegressor 정확도 : 0.8927
+# StandardScaler 결과 : 0.8789
+# MinMaxScaler 결과 : 0.8827
+# MaxAbsScaler 결과 : 0.8824
+# RobustScaler 결과 : 0.8830
+# QuantileTransformer 결과 : 0.8835
+# PowerTransformer 결과 : 0.8834
+# ValueError: The Box-Cox transformation can only be applied to strictly positive data
 #==============================================================================#

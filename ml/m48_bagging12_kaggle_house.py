@@ -3,9 +3,11 @@ import pandas as pd
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from xgboost import XGBClassifier, XGBRegressor
 import time
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.feature_selection import SelectFromModel
+
 
 
 #1. 데이터
@@ -21,12 +23,12 @@ print(train_set.describe(include=['number']).loc[['min','max','mean']].T.sort_va
 print('after drop Id ::', train_set.shape, test_set.shape)  # (1460, 80) (1459, 79)
 
 # 'SalePrice'와  'GrLivArea'의 관계
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-ax.scatter(x = train_set['MSSubClass'], y = train_set['SalePrice'])
-plt.ylabel('MSSubClass', fontsize = 13)
-plt.ylabel('SalePrice', fontsize = 13)
-plt.show()
+# import matplotlib.pyplot as plt
+# fig, ax = plt.subplots()
+# ax.scatter(x = train_set['MSSubClass'], y = train_set['SalePrice'])
+# plt.ylabel('MSSubClass', fontsize = 13)
+# plt.ylabel('SalePrice', fontsize = 13)
+# plt.show()
 
 # 이상치 제거 'SalePrice'와  'GrLivArea'
 train_set = train_set.drop(train_set[(train_set['GrLivArea']>4000) 
@@ -183,45 +185,42 @@ x_test = scaler.transform(x_test)
 
 
 #2. 모델
-from sklearn.ensemble import VotingRegressor
+from sklearn.svm import SVR
+from sklearn.ensemble import BaggingClassifier, BaggingRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from xgboost import XGBClassifier, XGBRegressor
-from lightgbm import LGBMClassifier, LGBMRegressor
-from catboost import CatBoostClassifier, CatBoostRegressor
 
-xg = XGBRegressor(learning_rate=0.1, max_depth=3, random_state=1004, 
-                   tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
-lg = LGBMRegressor(learning_rate=0.3, max_depth=10, random_state=1004)
-cat = CatBoostRegressor(verbose=0)
-
-model = VotingRegressor(
-    estimators=[('XG', xg), ('LG', lg), ('CAT', cat)],
-    # voting='soft',   # hard
-    # voting='hard',
-    n_jobs=-1
-)
+# model = BaggingRegressor(SVR(), 
+# model = BaggingRegressor(LinearRegression(), 
+# model = BaggingRegressor(DecisionTreeRegressor(), 
+model = BaggingRegressor(XGBRegressor(), 
+                          n_estimators=100,
+                          n_jobs=-1,
+                          random_state=123
+                          )
 
 #3. 훈련
+import time
+start = time.time()
 model.fit(x_train, y_train)
+end = time.time()
+
 
 #4. 평가, 예측
-y_predict = model.predict(x_test)
-score = r2_score(y_test, y_predict)
-print('보팅 결과 : ', round(score, 4))
+result = model.score(x_test, y_test)    
+print('Bagging_LinearRegression 결과 : ', result)
+print('걸린 시간 : ', end - start)
 
-classifiers = [cat, xg, lg]
-for model2 in classifiers:
-    model2.fit(x_train, y_train)
-    y_predict = model2.predict(x_test)
-    score2 = r2_score(y_test, y_predict)
-    class_name = model2.__class__.__name__
-    print('{0} 정확도 : {1:.4f}'.format(class_name, score2), )
-
+    
+    
 #=================================== 결과 =====================================#
-# 기존 : 0.9054801606268293
-# 보팅 결과 :  0.917
-# CatBoostRegressor 정확도 : 0.9202
-# XGBRegressor 정확도 : 0.9051
-# LGBMRegressor 정확도 : 0.8927
+# Bagging_SVR 결과 : -0.0748301562502045
+# 걸린 시간 :  2.0589382648468018
+# Bagging_LinearRegression 결과 :  -5.579001509839157e+21
+# 걸린 시간 :  1.352250576019287
+# Bagging_DecisionTreeRegressor 결과 :  0.8750256065532401
+# 걸린 시간 :  1.4052150249481201
+# Bagging_XGBRegressor 결과 :  0.9094881151053809
+# 걸린 시간 :  9.498663663864136
 #==============================================================================#

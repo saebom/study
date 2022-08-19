@@ -1,13 +1,21 @@
+
 import numpy as np
 import pandas as pd
 from sklearn.datasets import fetch_california_housing
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from xgboost import XGBClassifier, XGBRegressor
-import time
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.preprocessing import MinMaxScaler, MaxAbsScaler, RobustScaler
+from sklearn.preprocessing import QuantileTransformer, PowerTransformer
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.feature_selection import SelectFromModel
-
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from lightgbm import LGBMClassifier, LGBMRegressor
+from sklearn.pipeline import make_pipeline
+import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings('ignore')
+import time
 
 
 #1. 데이터
@@ -66,7 +74,7 @@ train_set[train_set[col] >= medOutlier]
 
 # x, y 데이터
 x = train_set.drop(['count'], axis=1)
-print(x.shape)  # (1328, 7)
+print(x.shape)  # (1328, 9)
 y = train_set['count']
 
 # IterativeImputer() 결측치 처리
@@ -77,51 +85,51 @@ imputer.fit(x)
 x = imputer.transform(x)
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, shuffle=True, random_state=123, train_size=0.8
+    x, y, shuffle=True, random_state=72, train_size=0.8
 )
 
-scaler = StandardScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
+# 스케일링
+sts = StandardScaler() 
+mms = MinMaxScaler()
+mas = MaxAbsScaler()
+rbs = RobustScaler()
+qtf = QuantileTransformer() 
+ptf1 = PowerTransformer(method='yeo-johnson')
+ptf2 = PowerTransformer(method='box-cox')
+
+scalers = [sts, mms, mas, rbs, qtf, ptf1, ptf2]
+for scaler in scalers:
+    x_train = scaler.fit_transform(x_train)
+    x_test = scaler.transform(x_test)
+    # model = LinearRegression()
+    model = RandomForestRegressor()
+    model.fit(x_train, y_train)
+    y_predict = model.predict(x_test)
+    result = r2_score(y_test, y_predict)
+    scale_name = scaler.__class__.__name__
+    print('{0} 결과 : {1:.4f}'.format(scale_name, result), )
+    
 
 
 #2. 모델
-from sklearn.svm import SVR
-from sklearn.ensemble import BaggingClassifier, BaggingRegressor
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from xgboost import XGBClassifier, XGBRegressor
-
-# model = BaggingRegressor(SVR(), 
-model = BaggingRegressor(LinearRegression(), 
-# model = BaggingRegressor(DecisionTreeRegressor(), 
-# model = BaggingRegressor(XGBRegressor(), 
-                          n_estimators=100,
-                          n_jobs=-1,
-                          random_state=123
-                          )
+model = LinearRegression()
+# model = RandomForestRegressor()
 
 #3. 훈련
-import time
-start = time.time()
 model.fit(x_train, y_train)
-end = time.time()
-
 
 #4. 평가, 예측
-result = model.score(x_test, y_test)    
-print('Bagging_DecisionTreeRegressor 결과 : ', result)
-print('걸린 시간 : ', end - start)
+y_predict = model.predict(x_test)
+result = r2_score(y_test, y_predict)
+print("기냥 결과 : ", round(result, 4)) 
 
 
 #=================================== 결과 =====================================#
-# 기존  r2 :  0.7967343945309509
-# Bagging_XGBRegressor 결과 :  0.8093961974319118
-# 걸린 시간 :  24.947882890701294
-# Bagging_DecisionTreeRegressor 결과 :  0.7948974052349778
-# 걸린 시간 :  9.95777678489685
-# Bagging_LinearRegression 결과 :  0.5851782948696027
-# 걸린 시간 :  9.507796287536621 
-# Bagging_SVR 결과 :  0.42374374368740597
-# 걸린 시간 :  11.047969102859497
+# StandardScaler 결과 : 0.7451
+# MinMaxScaler 결과 : 0.7510
+# MaxAbsScaler 결과 : 0.7416
+# RobustScaler 결과 : 0.7503
+# QuantileTransformer 결과 : 0.7472
+# PowerTransformer 결과 : 0.7443
+# ValueError: The Box-Cox transformation can only be applied to strictly positive data
 #==============================================================================#

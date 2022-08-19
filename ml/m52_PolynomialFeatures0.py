@@ -12,7 +12,7 @@ print(x)
 #  [6 7]]
 print(x.shape)  #(4, 2)
 
-pf = PolynomialFeatures(degree=2)
+pf = PolynomialFeatures(degree=2)   # # degree : 거듭제곱의 차수, include_bias : 편향값(1) 추가 여부
 x_df = pf.fit_transform(x)
 print(x_df)
 # degree=2
