@@ -16,7 +16,8 @@ optimizer.maximize(init_points=2, # 초기값
                    n_iter=20,     # 횟수
                    )
 
-print(optimizer.max)    # {'target': 9.999835918969607, 'params': {'x1': 0.00783279093916099, 'x2': 1.9898644972252864}}
+print(optimizer.max)    
+# {'target': 9.999835918969607, 'params': {'x1': 0.00783279093916099, 'x2': 1.9898644972252864}}
 
 
 

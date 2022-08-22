@@ -81,6 +81,7 @@ x_test = scaler.transform(x_test)
 # lgb_bo.maximize(init_points=5,
 #                 n_iter=50)
 # print(lgb_bo.max)
+
 # {'target': 0.614937470424126, 
 # 'params': {'colsample_bytree': 0.5, 'max_bin': 407.26875362111844, 
 # 'max_depth': 16.0, 'min_child_samples': 10.0, 'min_child_weight': 20.0, 
@@ -92,6 +93,7 @@ x_test = scaler.transform(x_test)
 #2. 수정한 파라미터를 이용해서 파라미터 재조정!!!
 
 ############################### 수정한 파라미터 이용 ##################################
+
 #2. 모델
 bayesian_params = {
     'max_depth' : (16, 26), 
@@ -143,6 +145,7 @@ lgb_bo = BayesianOptimization(f=lgb_hamsu,
 lgb_bo.maximize(init_points=5,
                 n_iter=50)
 print(lgb_bo.max)
+
 # {'target': 0.623246923899649, 
 # 'params': {'colsample_bytree': 0.5778008132119985, 'max_bin': 462.95635429923664, 
 # 'max_depth': 24.34933164101291, 'min_child_samples': 10.573443099944173, 

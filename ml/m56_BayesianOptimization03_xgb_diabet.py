@@ -109,48 +109,27 @@ bayesian_params = {
     'reg_lambda' : [2,100], #default 1 / 0~inf / L2 제곱 가중치 규제 / 그냥 lambda도 적용됨
 }
 
-def lgb_hamsu(max_depth, gamma, min_child_weight,  
-              subsample, colsample_bytree, colsample_bylevel, colsample_bynode, 
-              reg_lambda, reg_alpha):
-    params = {
-        'n_estimators' : 500, 'learning_rate' : 0.02,
-        'max_depth' : int(round(max_depth)),                # 무조건 정수
-        'gamma' : int(round(gamma)), 
-        'min_child_weight' : int(round(min_child_weight)),  
-        'subsample' : max(min(subsample, 1), 0),             # 0~1 사이의 값
-        'colsample_bytree' : max(min(colsample_bytree, 1), 0),   
-        'colsample_bylevel' : max(min(colsample_bylevel, 1), 0),   
-        'colsample_bynode' : max(min(colsample_bynode, 1), 0),   
-        'reg_lambda' : max(reg_lambda, 0),          # 무조건 양수만
-        'reg_alpha' : max(reg_alpha, 0),        
-    }
-    
-    # *여러개의인자를받겠다
-    # **키워드를 받겠다(딕셔너리 형태)
-    model = XGBRegressor(**params)
-    
-    model.fit(x_train, y_train,
-              eval_set=[(x_train, y_train), (x_test, y_test)],
-              eval_metric='rmse',
-              verbose=0,
-              early_stopping_rounds=50
-              )
-    
-    y_predict = model.predict(x_test)
-    results = r2_score(y_test, y_predict)
-    
-    return results
 
-lgb_bo = BayesianOptimization(f=lgb_hamsu, 
-                              pbounds=bayesian_params,
-                              random_state=123,
-                              )
-lgb_bo.maximize(init_points=5,
-                n_iter=50)
-print(lgb_bo.max)
+model = XGBRegressor(max_depth=8,
+                     gamma=45,
+                     min_child_weight=27,
+                     subsample=0.9,
+                     colsample_bytree=0.5,
+                     colsample_bylevel=0.8,
+                     colsample_bynode=0.9,
+                     reg_alpha=17,
+                     reg_lambda=26
+                     )
 
-# {'target': 0.6192467806110348, 'params': {'colsample_bylevel': 0.9775948096772601, 
-# 'colsample_bynode': 0.95225780624897, 'colsample_bytree': 0.552682885472908, 
-# 'gamma': 47.72618602567578, 'max_depth': 5.101391780342154, 
-# 'min_child_weight': 27.992907357041474, 'reg_alpha': 27.62255887496644, 
-# 'reg_lambda': 29.16362781819454, 'subsample': 0.9460444883621733}}
+model.fit(x_train, y_train,
+            eval_set=[(x_train, y_train), (x_test, y_test)],
+            eval_metric='rmse',
+            verbose=0,
+            early_stopping_rounds=50
+            )
+
+y_predict = model.predict(x_test)
+results = r2_score(y_test, y_predict)
+print('파라미터 적용 결과 : ', results)    
+
+# 파라미터 적용 결과 :  0.6246381030375097
