@@ -1,14 +1,14 @@
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-from sklearn.datasets import load_boston
+from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 tf.compat.v1.set_random_seed(777)
 
 
 #1. 데이터
-datasets = load_boston()
+datasets = fetch_california_housing()
 x = datasets.data      
 y = datasets.target.reshape(-1, 1)    
 print(x.shape, y.shape) # (506, 13) (506, 1)
@@ -24,10 +24,10 @@ print(type(x_train), type(y_train))
 print(x_train.dtype, y_train.dtype) # float64 int32
 print(x_test.dtype, y_test.dtype)   # float64 int32
 
-x = tf.compat.v1.placeholder(tf.float32, shape=[None, 13])
+x = tf.compat.v1.placeholder(tf.float32, shape=[None, 8])
 y = tf.compat.v1.placeholder(tf.float32, shape=[None, 1])
 
-w1 = tf.compat.v1.Variable(tf.random_normal([13, 32]), name='weight1') 
+w1 = tf.compat.v1.Variable(tf.random_normal([8, 32]), name='weight1') 
 b1 = tf.compat.v1.Variable(tf.random_normal([32]), name='bias1')   
 
 hidden_layer1 = tf.compat.v1.matmul(x, w1) + b1
@@ -63,7 +63,7 @@ train = optimizer.minimize(loss)
 sess = tf.compat.v1.Session() 
 sess.run(tf.compat.v1.global_variables_initializer())     
 
-epochs = 7001
+epochs = 2001
 for step in range(epochs):
     cost_val, hy_val, _ = sess.run([loss, hypothesis, train], 
                                     feed_dict={x:x_train, y:y_train})
@@ -76,10 +76,10 @@ print(y_predict)
 
 from sklearn.metrics import r2_score, mean_absolute_error
 r2 = r2_score(y_test, y_predict)
-print('r2 : ', r2)      # r2 :  0.6740997004888416
+print('r2 : ', r2)      # r2 :  0.6661088487503457
 
 mae = mean_absolute_error(y_test, y_predict)
-print('mae : ', mae)    # mae :  3.2368535852899734
+print('mae : ', mae)    # 0.44594007144042397
 
 sess.close()
     

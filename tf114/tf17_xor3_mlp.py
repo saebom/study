@@ -59,8 +59,8 @@ for step in range(epochs):
 y_predict = sess.run(tf.cast(hy_val>0.5, dtype=tf.float32))  
 from sklearn.metrics import accuracy_score, mean_absolute_error
 acc = accuracy_score(y_data, y_predict)
-print('acc : ', acc)      # acc :  
+print('acc : ', acc)      # acc :  1.0
 mae = mean_absolute_error(y_data, hy_val)
-print('mae : ', mae)      # mae :  
+print('mae : ', mae)      # mae :  0.001247905194759369 
 sess.close()
  
