@@ -45,19 +45,6 @@ def outliers(df, col):
     print("Outliers:", out)
     print("min",np.median(out))
     return np.median(out)
-    
-col = "PoolQC"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
-
-col = "weather"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
-
-col = "windspeed"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
-
 
 # all_data_set 데이터
 label = train_set['SalePrice']

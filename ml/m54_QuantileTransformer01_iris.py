@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 from sklearn.datasets import load_iris, load_boston, load_diabetes
@@ -33,9 +32,10 @@ sts = StandardScaler()
 mms = MinMaxScaler()
 mas = MaxAbsScaler()
 rbs = RobustScaler()
-qtf = QuantileTransformer() 
-ptf1 = PowerTransformer(method='yeo-johnson')
-ptf2 = PowerTransformer(method='box-cox')
+qtf = QuantileTransformer()                     # QuantileTransformer 는 지정된 분위수에 맞게 데이터를 변환함. 
+                                                # 기본 분위수는 1,000개이며, n_quantiles 매개변수에서 변경할 수 있음
+ptf1 = PowerTransformer(method='yeo-johnson')   # 'yeo-johnson', 양수 및 음수 값으로 작동
+ptf2 = PowerTransformer(method='box-cox')       # 'box-cox', 양수 값에서만 작동
 
 scalers = [sts, mms, mas, rbs, qtf, ptf1, ptf2]
 for scaler in scalers:

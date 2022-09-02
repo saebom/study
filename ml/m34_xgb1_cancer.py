@@ -1,4 +1,3 @@
-from inspect import Parameter
 from sklearn.datasets import load_breast_cancer, load_diabetes
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold, StratifiedKFold

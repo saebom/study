@@ -60,7 +60,7 @@ print(df['sepal width (cm)'].head())
 # 2              3.2
 # 3              3.1
 # 4              3.6
-df['sepal width (cm)'] = np.log1p(df['sepal width (cm)']) # np.log1p로 로그 변환함
+df['sepal width (cm)'] = np.log1p(df['sepal width (cm)']) # np.log1p로 로그 변환함, 지수변환은 np.exp 사용
 print(df['sepal width (cm)'].head())
 # 0         1.504077
 # 1         1.386294
