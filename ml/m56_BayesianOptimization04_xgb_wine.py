@@ -125,8 +125,6 @@ def lgb_hamsu(max_depth, gamma, min_child_weight,
         'reg_alpha' : max(reg_alpha, 0),        
     }
     
-    # *여러개의인자를받겠다
-    # **키워드를 받겠다(딕셔너리 형태)
     model = XGBClassifier(**params)
     
     model.fit(x_train, y_train,
