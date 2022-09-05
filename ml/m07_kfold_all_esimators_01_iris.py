@@ -47,47 +47,6 @@ for (name, algorithm) in allAlgorithms:
 
 #===================================== 결  과 ==========================================#
 # 모델의 갯수 :  41
-# allAlgorithms :  [('AdaBoostClassifier', <class 'sklearn.ensemble._weight_boosting.AdaBoostClassifier'>), 
-# ('BaggingClassifier', <class 'sklearn.ensemble._bagging.BaggingClassifier'>), 
-# ('BernoulliNB', <class 'sklearn.naive_bayes.BernoulliNB'>), 
-# ('CalibratedClassifierCV', <class 'sklearn.calibration.CalibratedClassifierCV'>), 
-# ('CategoricalNB', <class 'sklearn.naive_bayes.CategoricalNB'>), 
-# ('ClassifierChain', <class 'sklearn.multioutput.ClassifierChain'>), 
-# ('ComplementNB', <class 'sklearn.naive_bayes.ComplementNB'>), 
-# ('DecisionTreeClassifier', <class 'sklearn.tree._classes.DecisionTreeClassifier'>), 
-# ('DummyClassifier', <class 'sklearn.dummy.DummyClassifier'>), 
-# ('ExtraTreeClassifier', <class 'sklearn.tree._classes.ExtraTreeClassifier'>), 
-# ('ExtraTreesClassifier', <class 'sklearn.ensemble._forest.ExtraTreesClassifier'>), 
-# ('GaussianNB', <class 'sklearn.naive_bayes.GaussianNB'>), 
-# ('GaussianProcessClassifier', <class 'sklearn.gaussian_process._gpc.GaussianProcessClassifier'>), 
-# ('GradientBoostingClassifier', <class 'sklearn.ensemble._gb.GradientBoostingClassifier'>), 
-# ('HistGradientBoostingClassifier', <class 'sklearn.ensemble._hist_gradient_boosting.gradient_boosting.HistGradientBoostingClassifier'>), 
-# ('KNeighborsClassifier', <class 'sklearn.neighbors._classification.KNeighborsClassifier'>), 
-# ('LabelPropagation', <class 'sklearn.semi_supervised._label_propagation.LabelPropagation'>), 
-# ('LabelSpreading', <class 'sklearn.semi_supervised._label_propagation.LabelSpreading'>), 
-# ('LinearDiscriminantAnalysis', <class 'sklearn.discriminant_analysis.LinearDiscriminantAnalysis'>), 
-# ('LinearSVC', <class 'sklearn.svm._classes.LinearSVC'>), 
-# ('LogisticRegression', <class 'sklearn.linear_model._logistic.LogisticRegression'>), 
-# ('LogisticRegressionCV', <class 'sklearn.linear_model._logistic.LogisticRegressionCV'>), 
-# ('MLPClassifier', <class 'sklearn.neural_network._multilayer_perceptron.MLPClassifier'>), 
-# ('MultiOutputClassifier', <class 'sklearn.multioutput.MultiOutputClassifier'>), 
-# ('MultinomialNB', <class 'sklearn.naive_bayes.MultinomialNB'>), 
-# ('NearestCentroid', <class 'sklearn.neighbors._nearest_centroid.NearestCentroid'>), 
-# ('NuSVC', <class 'sklearn.svm._classes.NuSVC'>), 
-# ('OneVsOneClassifier', <class 'sklearn.multiclass.OneVsOneClassifier'>), 
-# ('OneVsRestClassifier', <class 'sklearn.multiclass.OneVsRestClassifier'>),
-# ('OutputCodeClassifier', <class 'sklearn.multiclass.OutputCodeClassifier'>),
-# ('PassiveAggressiveClassifier', <class 'sklearn.linear_model._passive_aggressive.PassiveAggressiveClassifier'>), 
-# ('Perceptron', <class 'sklearn.linear_model._perceptron.Perceptron'>), 
-# ('QuadraticDiscriminantAnalysis', <class 'sklearn.discriminant_analysis.QuadraticDiscriminantAnalysis'>), 
-# ('RadiusNeighborsClassifier', <class 'sklearn.neighbors._classification.RadiusNeighborsClassifier'>),
-# ('RandomForestClassifier', <class 'sklearn.ensemble._forest.RandomForestClassifier'>),
-# ('RidgeClassifier', <class 'sklearn.linear_model._ridge.RidgeClassifier'>),
-# ('RidgeClassifierCV', <class 'sklearn.linear_model._ridge.RidgeClassifierCV'>),
-# ('SGDClassifier', <class 'sklearn.linear_model._stochastic_gradient.SGDClassifier'>), 
-# ('SVC', <class 'sklearn.svm._classes.SVC'>), 
-# ('StackingClassifier', <class 'sklearn.ensemble._stacking.StackingClassifier'>),
-# ('VotingClassifier', <class 'sklearn.ensemble._voting.VotingClassifier'>)]
 #============================================================================================
 # ACC :  [0.63333333 0.93333333 1.         0.9        0.96666667] 
 #  cross_val_score :  0.8867
@@ -165,5 +124,3 @@ for (name, algorithm) in allAlgorithms:
 # StackingClassifier 은 안나온 놈!!!
 # VotingClassifier 은 안나온 놈!!!
 #=======================================================================================#
-
-
