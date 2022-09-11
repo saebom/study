@@ -35,7 +35,7 @@ model = Model(inputs=base_model.input, outputs=output1)
 #2. 
 base_model.trainable = False
 
-# model.summary()
+model.summary()
 # Total params: 22,022,082
 # Trainable params: 219,298
 # Non-trainable params: 21,802,784
