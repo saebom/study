@@ -23,7 +23,7 @@ output = Dense(100, activation='softmax')(hidden1)
 model = Model(inputs=input, outputs=output)
 
 model.trainable = False     # 모델의 trainable을 시키지 않는다
-model.summary()
+# model.summary()
  
 print(len(model.weights))
 print(len(model.trainable_weights))
