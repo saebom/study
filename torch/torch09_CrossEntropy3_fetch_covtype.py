@@ -1,5 +1,4 @@
-from bayes_opt import ScreenLogger
-from sklearn.datasets import load_breast_cancer
+from sklearn.datasets import fetch_covtype
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -10,50 +9,43 @@ print('torch : ', torch.__version__, '사용 DEVICE : ', DEVICE)
 # torch :  1.12.1 사용 DEVICE :  cuda:0
 
 #1. 데이터
-datasets = load_breast_cancer()
+datasets = fetch_covtype()
 x = datasets.data
 y = datasets['target']
 
 x = torch.FloatTensor(x)
-y = torch.FloatTensor(y)
+y = torch.LongTensor(y)
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.7, 
     shuffle=True, 
-    random_state=123,
+    random_state=72,
     stratify=y
 )
 
-x_train = torch.FloatTensor(x_train)
-y_train = torch.FloatTensor(y_train).unsqueeze(1).to(DEVICE)
-x_test = torch.FloatTensor(x_test)
-y_test = torch.FloatTensor(y_test).unsqueeze(-1).to(DEVICE)
-
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.fit(x_test)
-
 x_train = torch.FloatTensor(x_train).to(DEVICE)
-# x_test = torch.FloatTensor(x_test).to(DEVICE) # 에러 new(): data must be a sequence (got StandardScaler)
+y_train = torch.LongTensor(y_train).to(DEVICE)
+x_test = torch.FloatTensor(x_test).to(DEVICE)
+y_test = torch.LongTensor(y_test).to(DEVICE)
 
-# print(x_train.size())   # torch.Size([398, 30])
+print(x_train.size())   # torch.Size([406708, 54])
 
-#2. 모델
+#2. 모델 
 model = nn.Sequential(
-    nn.Linear(30, 64),
+    nn.Linear(54, 64),
     nn.ReLU(),
     nn.Linear(64, 32),
     nn.ReLU(),
     nn.Linear(32, 16),
     nn.ReLU(),
-    nn.Linear(16, 1),
-    nn.Sigmoid()
+    nn.Linear(16, 7),
+    # nn.Softmax(),
 ).to(DEVICE) 
 
 #3. 컴파일, 훈련
-criterion = nn.BCELoss() #binary_crossentropy loss
+# criterion = nn.BCELoss() #binary_crossentropy loss
+criterion = nn.CrossEntropyLoss() #crossentropy loss
 
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -88,15 +80,12 @@ print('loss : ', loss2)
 # y_predict = model(x_test)
 # print(y_predict[:10])
 
-y_predict = (model(x_test) >= 0.5).float()  # .float()은 boolean이 실수형으로 나옴
-print(y_predict[:10])
+y_predict = torch.argmax(model(x_test), axis=1)  
 
-score = (y_predict == y_test).float().mean() 
-print('accuracy :{:.4f}'.format(score))
- 
 from sklearn.metrics import accuracy_score
-score = accuracy_score(y_test, y_predict)   # 에러
-print('accuracy_score : ', score)
-
+# score = accuracy_score(y_test, y_predict)   # 에러
 score = accuracy_score(y_test.cpu(), y_predict.cpu())
 print('accuracy_score : ', score)
+
+# ========================== 평가, 예측 =============================
+# 
