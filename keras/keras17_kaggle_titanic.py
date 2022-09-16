@@ -1,7 +1,5 @@
 # [실습]
 # 시작 !!!
-from bitarray import test
-from matplotlib.pyplot import axis
 import numpy as np
 import pandas as pd
 from sklearn import datasets
