@@ -43,7 +43,7 @@ train_set = TensorDataset(x_train, y_train)
 test_set = TensorDataset(x_test, y_test)
 
 train_loader = DataLoader(train_set, batch_size=512, shuffle=True)
-test_loader = DataLoader(test_set, batch_size=512, shuffle=True)
+test_loader = DataLoader(test_set, batch_size=512)
 
 
 #2. 모델 
@@ -139,3 +139,4 @@ print('r2_score : ', score)
 # ========================== 평가, 예측 =============================
 # loss :  0.4797317385673523
 # r2_score :  0.6351332374016212
+# ===================================================================
