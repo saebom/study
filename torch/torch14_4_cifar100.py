@@ -1,4 +1,5 @@
-from torchvision.datasets import MNIST
+from sqlite3 import DatabaseError
+from torchvision.datasets import CIFAR100
 from torch.utils.data import TensorDataset, DataLoader
 import torch
 import torch.nn as nn
@@ -6,34 +7,26 @@ import torch.optim as optim
 import numpy as np
 
 USE_CUDA = torch.cuda.is_available()
-DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
-print('torch : ', torch.__version__, '사용 DEVICE : ', DEVICE)
-# torch :  1.12.1 사용 DEVICE :  cuda:0
-
-import torchvision.transforms as tr
-transf = tr.Compose([tr.Resize(15), tr.ToTensor()])  # 커스터마이징 된 TensorDataset을 사용할 때 필요
+DEVICE = torch.device('cuda:0' if USE_CUDA else 'cup')
 
 #1. 데이터
 path = './_data/torch_data/'
-
-# train_dataset = MNIST(path, train=True, download=True, transform=transf)  # transform 사용
-# test_dataset = MNIST(path, train=False, download=True, transform=transf)  # ttransform 사용
-train_dataset = MNIST(path, train=True, download=True)  # train = True 는 train set, 
-test_dataset = MNIST(path, train=False, download=True)  # train = False 는 test set
-
-# print(train_dataset[0][0].shape) # torch.Size([1, 15, 15])
+train_dataset = CIFAR100(path, train=True, download=False)
+test_dataset = CIFAR100(path, train=False, download=False)
 
 x_train, y_train = train_dataset.data/255. , train_dataset.targets
 x_test, y_test = test_dataset.data/255. , test_dataset.targets
 
-print(x_train.shape, x_test.size()) # torch.Size([60000, 28, 28]) torch.Size([10000, 28, 28])
-print(y_train.shape, y_test.size()) # torch.Size([60000]) torch.Size([10000])
+x_train = torch.FloatTensor(x_train)
+y_train = torch.LongTensor(y_train)
+x_test = torch.FloatTensor(x_test)
+y_test = torch.LongTensor(y_test)
 
-# print(np.min(x_train), np.max(x_train)) # 에러 min() received an invalid combination of arguments - got (axis=NoneType, out=NoneType, )
-print(np.min(x_train.numpy()), np.max(x_test.numpy()))  # 0.0 1.0
+print(x_train.shape, x_test.size()) # torch.Size([50000, 32, 32, 3]) torch.Size([10000, 32, 32, 3])
+print(y_train.shape, y_test.size()) # torch.Size([50000]) torch.Size([10000])
 
-x_train, x_test = x_train.view(-1, 28*28), x_test.view(-1, 784)
-print(x_train.shape, x_test.size()) # torch.Size([60000, 784]) torch.Size([10000, 784])
+x_train, x_test = x_train.reshape(50000, 32*32*3), x_test.reshape(10000, 32*32*3)
+print(x_train.shape, x_test.size()) # torch.Size([50000, 3072]) torch.Size([10000, 3072])
 
 train_dset = TensorDataset(x_train, y_train)
 test_dset = TensorDataset(x_test, y_test)
@@ -46,34 +39,33 @@ class DNN(nn.Module):
     def __init__(self, num_features):
         super().__init__()
         self.hidden_layer1 = nn.Sequential(
-            nn.Linear(num_features, 100), 
+            nn.Linear(num_features, 64),
             nn.ReLU(),
-            nn.Dropout(0.5)
+            nn.Dropout(0.25)
         )
-        
         self.hidden_layer2 = nn.Sequential(
-            nn.Linear(100, 100), 
+            nn.Linear(64, 64),
             nn.ReLU(),
-            nn.Dropout(0.5)
+            nn.Dropout(0.25)
         )
         self.hidden_layer3 = nn.Sequential(
-            nn.Linear(100, 100), 
+            nn.Linear(64, 128),
             nn.ReLU(),
-            nn.Dropout(0.3)
+            nn.Dropout(0.4)
         )
         self.hidden_layer4 = nn.Sequential(
-            nn.Linear(100, 100), 
+            nn.Linear(128, 254),
             nn.ReLU(),
-            nn.Dropout(0.3)
+            nn.Dropout(0.4)
         )
         self.hidden_layer5 = nn.Sequential(
-            nn.Linear(100, 100), 
+            nn.Linear(254, 100),
             nn.ReLU(),
-            nn.Dropout(0.3)
+            nn.Dropout(0.2)
         )
-        self.output_layer = nn.Linear(100, 10)
-        
-    def forward(self, x):    
+        self.output_layer = nn.Linear(100, 100)
+
+    def forward(self, x):
         x = self.hidden_layer1(x)
         x = self.hidden_layer2(x)
         x = self.hidden_layer3(x)
@@ -82,32 +74,31 @@ class DNN(nn.Module):
         x = self.output_layer(x)
         return(x)
     
-model = DNN(784).to(DEVICE)    
+model = DNN(x_train.shape[1]).to(DEVICE)
 
 #3. 컴파일, 훈련
 criterion = nn.CrossEntropyLoss()
 
-optimizer = optim.Adam(model.parameters(), lr=1e-4) # 0.0001
+optimizer = optim.Adam(model.parameters(), lr = 1e-4)
 
 def train(model, criterion, optimizer, loader):
     
     epoch_loss = 0
-    epoch_acc = 0 
+    epoch_acc = 0
     
     for x_batch, y_batch in loader:
         x_batch, y_batch = x_batch.to(DEVICE), y_batch.to(DEVICE)
         
         optimizer.zero_grad()
-        
         hypothesis = model(x_batch)
         
-        loss = criterion(hypothesis, y_batch)        
+        loss = criterion(hypothesis, y_batch)
         loss.backward()
         optimizer.step()
         
-        epoch_loss +=loss.item()
+        epoch_loss += loss.item()
         
-        y_predict = torch.argmax(hypothesis, 1)        
+        y_predict = torch.argmax(hypothesis, 1)
         acc = (y_predict == y_batch).float().mean()
         
         epoch_acc += acc.item()
@@ -150,6 +141,7 @@ for epoch in range(1, epochs +1):
     print('epoch:{}, loss:{:.4f}, acc:{:.3f}, val_loss:{:.4f}, val_acc:{:.3f}'.format(
         epoch, loss, acc, val_loss, val_acc
     ))
-        
-        
-        
+
+    
+
+
