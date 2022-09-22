@@ -57,7 +57,7 @@ print(len(train_set))   # 398
 
 # x, y 배치 합체!!! 두그둥!!! 
 train_loader = DataLoader(train_set, batch_size=40, shuffle=True)   # DataLoader에서 batch를 정의함
-test_loader = DataLoader(test_set, batch_size=40, shuffle=False)     # DataLoader에서 batch를 정의함
+test_loader = DataLoader(test_set, batch_size=40)     # DataLoader에서 batch를 정의함
 
 print(train_loader) # <torch.utils.data.dataloader.DataLoader object at 0x000001840A81D910>
 # print('==========================train_loader[0]==============================')
@@ -99,9 +99,30 @@ class Model(nn.Module):
         x = self.sigmoid(x)
         return x
         
-model = Model(30, 1).to(DEVICE)        
+# model = Model(30, 1).to(DEVICE)        
 
+model2 = Model(30, 1).to(DEVICE)
 
+path = './_save/'
+
+##################################### 세이브 로드 #########################################
+# torch.save(model.state_dict(), path +'torch13_state_dict.pt')   # 토치의 가중치와 모델이 저장됨
+model2.load_state_dict(torch.load(path + 'torch13_state_dict.pt'))
+###########################################################################################
+
+##################################### 하단거 붙임 ##########################################
+y_predict = (model2(x_test) >= 0.5).float()  # .float()은 boolean이 실수형으로 나옴
+print(y_predict[:10])
+
+score = (y_predict == y_test).float().mean() 
+print('accuracy :{:.4f}'.format(score))
+ 
+from sklearn.metrics import accuracy_score
+# score = accuracy_score(y_test, y_predict)   # 에러
+score = accuracy_score(y_test.cpu(), y_predict.cpu())
+print('accuracy_score : ', score)
+
+'''
 #3. 컴파일, 훈련
 criterion = nn.BCELoss() #binary_crossentropy loss
 
@@ -155,7 +176,7 @@ from sklearn.metrics import accuracy_score
 # score = accuracy_score(y_test, y_predict)   # 에러
 score = accuracy_score(y_test.cpu(), y_predict.cpu())
 print('accuracy_score : ', score)
-
+'''
 
 # ========================== 평가, 예측 =============================
 # loss :  0.634477436542511
