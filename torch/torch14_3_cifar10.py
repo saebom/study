@@ -6,7 +6,7 @@ import torch.optim as optim
 import numpy as np
 
 USE_CUDA = torch.cuda.is_available()
-DEVICE = torch.device('cuda:0' if USE_CUDA else 'cup')
+DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
 
 #1. 데이터 
 path = './_data/torch_data/'
