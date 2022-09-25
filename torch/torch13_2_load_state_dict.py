@@ -57,7 +57,7 @@ print(len(train_set))   # 398
 
 # x, y 배치 합체!!! 두그둥!!! 
 train_loader = DataLoader(train_set, batch_size=40, shuffle=True)   # DataLoader에서 batch를 정의함
-test_loader = DataLoader(test_set, batch_size=40)     # DataLoader에서 batch를 정의함
+test_loader = DataLoader(test_set, batch_size=40, shuffle=False)     # DataLoader에서 batch를 정의함
 
 print(train_loader) # <torch.utils.data.dataloader.DataLoader object at 0x000001840A81D910>
 # print('==========================train_loader[0]==============================')
