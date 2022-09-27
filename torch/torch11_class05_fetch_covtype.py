@@ -61,7 +61,7 @@ class Model(nn.Module):
         x = self.linear4(x)
         return x
     
-model = Model(54, 7).to(DEVICE)    
+model = Model(54, 8).to(DEVICE)    
 
 #3. 컴파일, 훈련
 # criterion = nn.BCELoss() #binary_crossentropy loss
@@ -108,4 +108,5 @@ score = accuracy_score(y_test.cpu(), y_predict.cpu())
 print('accuracy_score : ', score)
 
 # ========================== 평가, 예측 =============================
-# 
+# loss :  1.4791884422302246
+# accuracy_score :  0.36460436937763907
