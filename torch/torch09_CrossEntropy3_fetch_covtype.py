@@ -39,7 +39,7 @@ model = nn.Sequential(
     nn.ReLU(),
     nn.Linear(32, 16),
     nn.ReLU(),
-    nn.Linear(16, 7),
+    nn.Linear(16, 8),
     # nn.Softmax(),
 ).to(DEVICE) 
 
@@ -88,4 +88,5 @@ score = accuracy_score(y_test.cpu(), y_predict.cpu())
 print('accuracy_score : ', score)
 
 # ========================== 평가, 예측 =============================
-# 
+# loss :  1.0920449495315552
+# accuracy_score :  0.5021284652102075
