@@ -78,7 +78,7 @@ class CNN(nn.Module):
     
 model = CNN(1).to(DEVICE)    
 
-# print(model)  # 모델 구성에 대한 것이 프린트 됨
+print(model)  # 모델 구성에 대한 것이 프린트 됨
 # CNN(
 #   (hidden_layer1): Sequential(
 #     (0): Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1))
@@ -132,7 +132,7 @@ def train(model, criterion, optimizer, loader):
 #4. 평가, 예측
 def evaluate(model, criterion, loader):
     model.eval()    # .eval() 함수는 dropout, batchnormalization 등 
-                    # 모델의 레이어 상에서 적용한 것들을 진행하지 않는다
+                    # 모델의 레이어 상에서 적용한 것들을 진행하지 않음
     
     epoch_loss = 0
     epoch_acc = 0
