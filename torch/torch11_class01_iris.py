@@ -118,6 +118,7 @@ from sklearn.metrics import accuracy_score
 score = accuracy_score(y_test.cpu(), y_predict.cpu())
 print('accuracy_score : ', score)
 
+
 # ========================== 평가, 예측 =============================
 # loss :  0.08173905313014984
 # accuracy_score :  0.9555555555555556
