@@ -29,8 +29,8 @@ from sklearn.linear_model import LogisticRegression, LinearRegression
 from xgboost import XGBClassifier, XGBRegressor
 
 # model = BaggingRegressor(LinearRegression(), 
-# model = BaggingRegressor(DecisionTreeRegressor(), 
-model = BaggingRegressor(XGBRegressor(), 
+model = BaggingRegressor(DecisionTreeRegressor(), 
+# model = BaggingRegressor(XGBRegressor(), 
                           n_estimators=100,
                           n_jobs=-1,
                           random_state=72
