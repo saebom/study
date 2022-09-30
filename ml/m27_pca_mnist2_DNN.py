@@ -27,7 +27,6 @@
 # acc = 0.9729,  0.9791,  0.9603
 
 #====================================================================================================#
-from tabnanny import verbose
 from keras.datasets import mnist
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Dropout
