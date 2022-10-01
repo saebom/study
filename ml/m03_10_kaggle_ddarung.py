@@ -3,9 +3,6 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
-# from tensorflow.python.keras.models import Sequential
-# from tensorflow.python.keras.layers import Dense
-# from tensorflow.python.keras.callbacks import EarlyStopping
 from sklearn.svm import LinearSVR
 from sklearn.metrics import r2_score, accuracy_score, mean_squared_error
 import time
@@ -80,7 +77,6 @@ print('결과 r2 : ', results)
 # print(hist.history['loss'])
 # print("=================================================================")
 # print(hist.history['val_loss'])
-
 
 
 #===================================== 결  과 ==========================================#
