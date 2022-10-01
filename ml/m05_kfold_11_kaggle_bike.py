@@ -77,9 +77,6 @@ model = RandomForestRegressor()
 scores = cross_val_score(model, x, y, cv=kfold)
 print('ACC : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
 
-
-
-
 #===================================== 결  과 ==========================================#
 # ACC :  [0.85044998 0.86817867 0.86278344 0.8569252  0.85014049] 
 #  cross_val_score :  0.8577
