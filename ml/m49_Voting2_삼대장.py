@@ -10,7 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from xgboost import XGBClassifier
 # pip install lightgbm
 from lightgbm import LGBMClassifier
-# pip install catbost
+# pip install catboost
 from catboost import CatBoostClassifier
 
 
