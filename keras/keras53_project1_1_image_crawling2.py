@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from urllib.request import urlretrieve
 from selenium import webdriver
 
@@ -65,7 +64,6 @@ for image in result:
     urlretrieve(image, img_folder_path + f'{cnt}.jpg')
 print("Saved!") 
         
-=======
 from urllib.request import urlretrieve
 from selenium import webdriver
 
@@ -131,5 +129,3 @@ for image in result:
     cnt += 1
     urlretrieve(image, img_folder_path + f'{cnt}.jpg')
 print("Saved!") 
-        
->>>>>>> 7eda28484bc3d6d889f8b99eb4a806680b0b6f1b
