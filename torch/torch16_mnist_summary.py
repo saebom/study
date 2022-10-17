@@ -168,6 +168,8 @@ for epoch in range(1, epochs +1):
 print("==================================  model ==================================")   
 print(model)     
 
+
+
 # !pip install torchsummary      
 from torchsummary import summary
 
