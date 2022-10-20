@@ -18,6 +18,7 @@ submission = pd.read_csv(path + 'travel_submission.csv')
 print('train.shape, test.shape, submit.shape', 
        train_set.shape, test_set.shape, submission.shape)    # (1955, 19) (2933, 18) (2933, 2)
 
+
 # train_set 데이터
 for i in train_set.columns:
     print(i,"column's unique values are:",train_set[i].unique())
