@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
+
 USE_CUDA = torch.cuda.is_available()
 DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
 print('torch : ', torch.__version__, '사용 DEVICE : ', DEVICE)
@@ -80,6 +81,7 @@ class CNN(nn.Module):
 model = CNN(1).to(DEVICE)    
 
 print(model)  # 모델 구성에 대한 것이 프린트 됨
+
 # CNN(
 #   (hidden_layer1): Sequential(
 #     (0): Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1))
