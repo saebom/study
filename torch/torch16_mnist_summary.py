@@ -132,6 +132,7 @@ def train(model, criterion, optimizer, loader):
 # hist = model.fit(x_train, y_train) # hist에는 loss와 acc가 들어가
 # 엄밀히 얘기하면 hist라고 하기는 그렇고, loss와 acc를 반환해준다고 혀!!!
 
+    
 #4. 평가, 예측
 def evaluate(model, criterion, loader):
     model.eval()    # .eval() 함수는 dropout, batchnormalization 등 
