@@ -67,6 +67,7 @@ for index, row in test.iterrows():
 
 import tqdm
 from tensorflow.keras.utils import load_img, img_to_array
+
 test_image = []
 for i in tqdm.tqdm(range(test.shape[0])):
     img = load_img(test_img + str(i+1) + '.jpg', target_size=(50, 60, 3))
