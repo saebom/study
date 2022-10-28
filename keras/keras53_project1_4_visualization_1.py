@@ -65,6 +65,7 @@ for index, row in test.iterrows():
         
     labels.append(tags)
 
+
 import tqdm
 from tensorflow.keras.utils import load_img, img_to_array
 
