@@ -3,6 +3,7 @@ import numpy as np
 import os
 print(cv2.__version__)  # 4.6.0
 
+
 path = "C:\study/teamproject\LeeJungJae"
 file_list = os.listdir(path)
 
@@ -14,7 +15,7 @@ file_name_list = []
 
 for i in range(len(file_list)):
     file_name_list.append(file_list[i].replace("", ""))
-# print(file_name_list)
+print(file_name_list)
 # print(file_name_list[0])
 # print(cv2.data.haarcascades)    #C:\Users\AIA\AppData\Roaming\Python\Python39\site-packages\cv2\data\
 
