@@ -16,8 +16,8 @@ file_name_list = []
 for i in range(len(file_list)):
     file_name_list.append(file_list[i].replace("", ""))
 print(file_name_list)
-# print(file_name_list[0])
-# print(cv2.data.haarcascades)    #C:\Users\AIA\AppData\Roaming\Python\Python39\site-packages\cv2\data\
+print(file_name_list[0])
+print(cv2.data.haarcascades)    #C:\Users\AIA\AppData\Roaming\Python\Python39\site-packages\cv2\data\
 
 # def Cutting_face_save(image, name):
 #     if img is None:
