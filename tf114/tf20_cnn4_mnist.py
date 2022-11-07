@@ -4,6 +4,7 @@ from torch import dropout
 
 tf.compat.v1.set_random_seed(123)
 
+
 # 즉시 실행모드!!!
 tf.compat.v1.disable_eager_execution()    
 
@@ -107,8 +108,8 @@ for epoch in range(training_epochs):    # 총 30번 돈다
 print('훈련 끗!!!')        
             
 #4. 평가, 예측
-# y_predict = sess.run(tf.math.argmax(sess.run(hypothesis, feed_dict={x:x_test}), axis=1)) 
-# y_test = sess.run(tf.math.argmax(y_test, axis=1))
+y_predict = sess.run(tf.math.argmax(sess.run(hypothesis, feed_dict={x:x_test}), axis=1)) 
+y_test = sess.run(tf.math.argmax(y_test, axis=1))
 
 # from sklearn.metrics import accuracy_score
 # acc = accuracy_score(y_test, y_predict)
