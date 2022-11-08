@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 print(tf.__version__)   # 2.10.0-dev20220713
 
+        
 #1. 데이터
 docs = ['너무 재밌어요', '참 최고에요', '참 잘 만든 영화에요',
         '추천하고 싶은 영화입니다', '한 번 더 보고 싶네요', '글쎄요',
