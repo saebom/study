@@ -111,9 +111,9 @@ print('훈련 끗!!!')
 y_predict = sess.run(tf.math.argmax(sess.run(hypothesis, feed_dict={x:x_test}), axis=1)) 
 y_test = sess.run(tf.math.argmax(y_test, axis=1))
 
-# from sklearn.metrics import accuracy_score
-# acc = accuracy_score(y_test, y_predict)
-# print('acc : ', acc)      # acc :  0.9903
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(y_test, y_predict)
+print('acc : ', acc)      # acc :  0.9903
 
 # [실습] verbose에 acc 너줘라
 
