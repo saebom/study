@@ -63,5 +63,6 @@ print('최종 loss : ', loss2)
 results = model(torch.Tensor([[4]]))
 print("4의 예측값 : ", results.item())
 
+
 # 최종 loss :  3.789561370324927e-14
 # 4의 예측값 :  4.000000953674316
