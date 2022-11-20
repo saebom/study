@@ -10,7 +10,6 @@ import numpy as np
 # print('torch : ', torch.__version__, '사용 DEVICE : ', DEVICE)
 # torch :  1.12.1 사용 DEVICE :  cuda:0
 
-
 import torchvision.transforms as tr
 transf = tr.Compose([tr.Resize(15), tr.ToTensor()])  # 커스터마이징 된 TensorDataset을 사용할 때 필요
 
