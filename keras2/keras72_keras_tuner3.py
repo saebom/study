@@ -7,6 +7,7 @@ from keras.layers import Dense,Dropout,Flatten
 from keras.optimizers import Adam     # tf 2.8 이상
 from sklearn.metrics import accuracy_score
 
+
 (x_train,y_train),(x_test,y_test) = mnist.load_data()
 x_train,x_test = x_train/255. ,x_test/255.
 
