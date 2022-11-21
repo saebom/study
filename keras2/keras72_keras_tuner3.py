@@ -43,6 +43,7 @@ kerastuner = kt.RandomSearch(
     directory="my_dir",
     project_name="tune_hypermodel",
 )
+
 # kerastuner = kt.Hyperband(get_model,
 #                           directory = 'my_dir',
 #                           objective = 'val_acc',
