@@ -3,7 +3,6 @@ from sklearn.metrics import mean_absolute_percentage_error, mean_absolute_error
 import tensorflow as tf
 import keras
 
-
 y_true = np.array([100.,2.])
 y_pred = np.array([200.,102.])
 # mae :  100.0
@@ -14,13 +13,11 @@ y_pred = np.array([200.,102.])
 # mae :  100.0
 # mape :  0.75
 
-
 # ==================== mae ========================= #
 mae = mean_absolute_error(
     y_true, y_pred
 )
 print('mae : ', mae)    
-
 
 # ==================== mape ========================= #
 mape = mean_absolute_percentage_error(
