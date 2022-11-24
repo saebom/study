@@ -5,9 +5,9 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
-# USE_CUDA = torch.cuda.is_available()
-# DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
-# print('torch : ', torch.__version__, '사용 DEVICE : ', DEVICE)
+USE_CUDA = torch.cuda.is_available()
+DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
+print('torch : ', torch.__version__, '사용 DEVICE : ', DEVICE)
 # torch :  1.12.1 사용 DEVICE :  cuda:0
 
 import torchvision.transforms as tr
