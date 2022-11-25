@@ -2,7 +2,7 @@
 # 버전이 0.xx 라면 아직 프로토 타입 및 베타테스트다. 이건 개발자들의 암묵적 합의다.
 import keras_tuner as kt
 import tensorflow as tf
-from tensorflow.keras.datasets import mnist
+from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense,Dropout,Flatten
 # from keras.optimizer_v2 import adam # tf 2.7 
@@ -98,7 +98,7 @@ history = model.fit(x_train,y_train,
 loss, accuracy = model.evaluate(x_test,y_test)
 print('TR_ACC : ',accuracy)
 print('TR_LOSS : ',loss)
-y_predict = model.predcit(x_test)
+y_predict = model.predcit_classes(x_test)
 
 print('TEST_ACC :',accuracy_score(y_test,y_predict))
 
