@@ -16,6 +16,7 @@ transf = tr.Compose([tr.Resize(15), tr.ToTensor()])  # 커스터마이징 된 Te
 
 
 #1. 데이터
+
 path = './_data/torch_data/'
 
 # train_dataset = MNIST(path, train=True, download=True, transform=transf)  # transform 사용
