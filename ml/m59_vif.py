@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
+
 dataset = fetch_california_housing()
 # print(dataset.feature_names)
 # ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
