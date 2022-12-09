@@ -25,6 +25,7 @@ x=pd.DataFrame(x, columns=dataset.feature_names)
 # vif['features'] = x.columns
 # print(vif)
 
+
 '''
 5~10 이상이면 높다고 판단 (통상적으로 5이상이면 높다고 판단, 피쳐가 너무 많을경우 10)
    vif Factor    features
