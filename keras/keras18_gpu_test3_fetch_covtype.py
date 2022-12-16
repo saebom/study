@@ -1,4 +1,3 @@
-from bitarray import test
 import numpy as np
 from sklearn import datasets
 from sklearn.datasets import fetch_covtype
